@@ -20,6 +20,7 @@ public class SplashScreenActivity extends Activity {
 			protected void onPostExecute(String result)
 			{
 				startActivity(new Intent(SplashScreenActivity.this, GameMenuActivity.class));
+				finish();
 				super.onPostExecute(result);
 			}
 

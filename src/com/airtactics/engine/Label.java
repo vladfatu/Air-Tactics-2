@@ -5,12 +5,12 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 
 public class Label {
-	String text;
-	Point position;
-	Paint paint;
-	Panel panel;
+	private String text;
+	private Point position;
+	private Paint paint;
+	private Panel panel;
 	
-	Label(String tempText, int textSize, Panel tempPanel, int color)
+	public Label(String tempText, int textSize, Panel tempPanel, int color)
 	{
 		position = new Point(0,0);
 		paint = new Paint();
@@ -24,7 +24,7 @@ public class Label {
 		panel = tempPanel;
 	}
 	
-	Label(String tempText, int textSize, Typeface font, Panel tempPanel)
+	public Label(String tempText, int textSize, Typeface font, Panel tempPanel)
 	{
 		position = new Point(0,0);
 		paint = new Paint();
@@ -57,5 +57,20 @@ public class Label {
 		text = tempText;
 		panel.invalidate();
 	}
+	
+	public String getText()
+	{
+		return text;
+	}
 
+	public Point getPosition()
+	{
+		return position;
+	}
+
+	public Paint getPaint()
+	{
+		return paint;
+	}
+	
 }
