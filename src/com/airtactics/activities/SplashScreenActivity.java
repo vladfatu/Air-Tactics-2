@@ -29,7 +29,7 @@ public class SplashScreenActivity extends Activity {
 			{
 				try
 				{
-					Thread.sleep(2000);
+					Thread.sleep(500);
 				} catch (InterruptedException e)
 				{
 					// TODO Auto-generated catch block
