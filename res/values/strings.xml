@@ -13,5 +13,8 @@
     <string name="single_player">Single Player</string>
     <string name="bluetooth">Bluetooth</string>
     <string name="online">Online</string>
+    <string name="start">Start</string>
+    <string name="randomize">Randomize</string>
+    <string name="rotate">Rotate</string>
 
 </resources>

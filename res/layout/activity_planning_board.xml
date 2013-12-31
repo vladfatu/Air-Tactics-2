@@ -1,25 +1,89 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     android:id="@+id/relativeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".PlanningBoardActivity" >
+    
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        ads:adSize="SMART_BANNER"
+        ads:adUnitId="ca-app-pub-4668622539935763/6585462734" >
+    </com.google.android.gms.ads.AdView>
+
+    <FrameLayout
+        android:id="@+id/frameLayoutGrid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="75dp" >
+
+        <ImageView
+            android:id="@+id/imageViewGrid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/content_description"
+            android:src="@drawable/grid" />
+
+        <ImageView
+            android:id="@+id/imageViewPlane1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/content_description"
+            android:src="@drawable/plane" />
+        
+        <ImageView
+            android:id="@+id/imageViewPlane2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/content_description"
+            android:visibility="gone"
+            android:src="@drawable/plane" />
+        
+        <ImageView
+            android:id="@+id/imageViewPlane3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/content_description"
+            android:visibility="gone"
+            android:src="@drawable/plane" />
+
+    </FrameLayout>
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/buttonRotate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="15dp"
-        android:text="@string/dummy_button" />
+        android:layout_above="@+id/buttonContinue"
+        android:layout_alignRight="@+id/buttonContinue"
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="50dp"
+        android:text="@string/rotate" />
 
-    <com.airtactics.engine.Panel
-        android:id="@+id/panelPlanning"
+    <Button
+        android:id="@+id/buttonRanomize"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/button1" />
+        android:layout_alignBaseline="@+id/buttonRotate"
+        android:layout_alignBottom="@+id/buttonRotate"
+        android:layout_alignLeft="@+id/buttonContinue"
+        android:layout_marginLeft="50dp"
+        android:text="@string/randomize" />
+
+    <Button
+        android:id="@+id/buttonContinue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/frameLayoutGrid"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/frameLayoutGrid"
+        android:layout_marginBottom="20dp"
+        android:text="@string/start" />
 
 </RelativeLayout>

@@ -3,17 +3,27 @@ package com.airtactics.pojos;
 import java.util.ArrayList;
 import java.util.List;
 
+import airtactics.com.R;
+import android.content.Context;
+import android.widget.FrameLayout.LayoutParams;
+import android.widget.ImageView;
+
 import com.airtactics.engine.Point;
+import com.airtactics.utils.ViewUtils;
 
 public class Plane {
 	private List<Point> points = new ArrayList<Point>();
 	private Point head;
 	private int numberOfPoints;
+	private ImageView imageView;
+	private float degrees;
 	
-	Plane()
+	public Plane(ImageView imageView)
 	{
 		numberOfPoints = 0;
 		head = new Point();
+		this.imageView = imageView;
+		this.degrees = 0;
 	}
 	public void setPoints(List<Point> p)
 	{
@@ -38,113 +48,148 @@ public class Plane {
 		return false;
 	}
 	
+	
+	//See if this is necessary
 	//rotate the plane 180 degrees around the point p if the plane is directed to the right
-	public Plane rotate1to3(Point p)
-	{
-		Plane temp = new Plane();
-		Point tempPoint = new Point();
-		for (int i=0; i<points.size();i++)
-		{
-			tempPoint.x = 2 * p.x - points.get(i).x;
-			tempPoint.y = points.get(i).y;
-			temp.addPoint(tempPoint);
-		}
-		tempPoint.x = 2 * p.x - head.x;
-		tempPoint.y = head.y;
-		temp.setHead(tempPoint);
-		return temp;
-	}
+//	public Plane rotate1to3(Point p)
+//	{
+//		Plane temp = new Plane();
+//		Point tempPoint = new Point();
+//		for (int i=0; i<points.size();i++)
+//		{
+//			tempPoint.x = 2 * p.x - points.get(i).x;
+//			tempPoint.y = points.get(i).y;
+//			temp.addPoint(tempPoint);
+//		}
+//		tempPoint.x = 2 * p.x - head.x;
+//		tempPoint.y = head.y;
+//		temp.setHead(tempPoint);
+//		return temp;
+//	}
 	//rotate the plane 180 degrees around the point p if the plane is directed up
-	public Plane rotate0to2(Point p)
+//	public Plane rotate0to2(Point p)
+//	{
+//		Plane temp = new Plane();
+//		Point tempPoint = new Point();
+//		for (int i=0; i<points.size();i++)
+//		{
+//			tempPoint.y = 2 * p.y - points.get(i).y;
+//			tempPoint.x = points.get(i).x;
+//			temp.addPoint(tempPoint);
+//		}
+//		tempPoint.y = 2 * p.y - head.y;
+//		tempPoint.x = head.x;
+//		temp.setHead(tempPoint);
+//		return temp;
+//	}
+	
+	public void shiftUp(int gridSize)
 	{
-		Plane temp = new Plane();
-		Point tempPoint = new Point();
-		for (int i=0; i<points.size();i++)
+		LayoutParams params = (LayoutParams) this.imageView.getLayoutParams();
+		if (params.topMargin - gridSize/10 >= 0)
 		{
-			tempPoint.y = 2 * p.y - points.get(i).y;
-			tempPoint.x = points.get(i).x;
-			temp.addPoint(tempPoint);
+			params.topMargin -= gridSize/10;
+			this.imageView.setLayoutParams(params);
+		
+			//TODO
+//			Plane temp = new Plane();
+//			Point tempPoint = new Point();
+//			for (int i=0; i<points.size();i++)
+//			{
+//				tempPoint.y = points.get(i).y-1;
+//				tempPoint.x = points.get(i).x;
+//				temp.addPoint(tempPoint);
+//			}
+//			tempPoint.y = head.y-1;
+//			tempPoint.x = head.x;
+//			temp.setHead(tempPoint);
+//			return temp;
 		}
-		tempPoint.y = 2 * p.y - head.y;
-		tempPoint.x = head.x;
-		temp.setHead(tempPoint);
-		return temp;
 	}
 	
-	public Plane shift(int i)
+	public void shiftDown(int gridSize)
 	{
-		switch(i)
+		LayoutParams params = (LayoutParams) this.imageView.getLayoutParams();
+		if (params.topMargin + this.imageView.getHeight() + gridSize/10 <= gridSize)
 		{
-			case 0 : shiftUp(); break;
-			case 1 : shiftRight(); break;
-			case 2 : shiftDown(); break;
-			case 3 : shiftLeft(); 
+			params.topMargin += gridSize/10;
+			this.imageView.setLayoutParams(params);
+			
+			//TODO
+//			Plane temp = new Plane();
+//			Point tempPoint = new Point();
+//			for (int i=0; i<points.size();i++)
+//			{
+//				tempPoint.y = points.get(i).y+1;
+//				tempPoint.x = points.get(i).x;
+//				temp.addPoint(tempPoint);
+//			}
+//			tempPoint.y = head.y+1;
+//			tempPoint.x = head.x;
+//			temp.setHead(tempPoint);
+//			return temp;
 		}
-		return this;
 	}
 	
-	public Plane shiftUp()
+	public void shiftLeft(int gridSize)
 	{
-		Plane temp = new Plane();
-		Point tempPoint = new Point();
-		for (int i=0; i<points.size();i++)
+		LayoutParams params = (LayoutParams) this.imageView.getLayoutParams();
+		if (params.leftMargin - gridSize/10 >= 0)
 		{
-			tempPoint.y = points.get(i).y-1;
-			tempPoint.x = points.get(i).x;
-			temp.addPoint(tempPoint);
+			params.leftMargin -= gridSize/10;
+			this.imageView.setLayoutParams(params);
+			
+			//TODO
+//			Plane temp = new Plane();
+//			Point tempPoint = new Point();
+//			for (int i=0; i<points.size();i++)
+//			{
+//				tempPoint.y = points.get(i).y;
+//				tempPoint.x = points.get(i).x-1;
+//				temp.addPoint(tempPoint);
+//			}
+//			tempPoint.y = head.y;
+//			tempPoint.x = head.x-1;
+//			temp.setHead(tempPoint);
+//			return temp;
 		}
-		tempPoint.y = head.y-1;
-		tempPoint.x = head.x;
-		temp.setHead(tempPoint);
-		return temp;
 	}
 	
-	public Plane shiftDown()
+	public void shiftRight(int gridSize)
 	{
-		Plane temp = new Plane();
-		Point tempPoint = new Point();
-		for (int i=0; i<points.size();i++)
+		LayoutParams params = (LayoutParams) this.imageView.getLayoutParams();
+		if (params.leftMargin + this.imageView.getWidth() + gridSize/10 <= gridSize)
 		{
-			tempPoint.y = points.get(i).y+1;
-			tempPoint.x = points.get(i).x;
-			temp.addPoint(tempPoint);
+			params.leftMargin += gridSize/10;
+			this.imageView.setLayoutParams(params);
+			
+			//TODO
+//			Plane temp = new Plane();
+//			Point tempPoint = new Point();
+//			for (int i=0; i<points.size();i++)
+//			{
+//				tempPoint.y = points.get(i).y;
+//				tempPoint.x = points.get(i).x+1;
+//				temp.addPoint(tempPoint);
+//			}
+//			tempPoint.y = head.y;
+//			tempPoint.x = head.x+1;
+//			temp.setHead(tempPoint);
+//			return temp;
 		}
-		tempPoint.y = head.y+1;
-		tempPoint.x = head.x;
-		temp.setHead(tempPoint);
-		return temp;
 	}
 	
-	public Plane shiftLeft()
+	public void rotateClockwise(Context context)
 	{
-		Plane temp = new Plane();
-		Point tempPoint = new Point();
-		for (int i=0; i<points.size();i++)
+		if (this.degrees + 90 >= 360)
 		{
-			tempPoint.y = points.get(i).y;
-			tempPoint.x = points.get(i).x-1;
-			temp.addPoint(tempPoint);
+			this.degrees = 0;
 		}
-		tempPoint.y = head.y;
-		tempPoint.x = head.x-1;
-		temp.setHead(tempPoint);
-		return temp;
-	}
-	
-	public Plane shiftRight()
-	{
-		Plane temp = new Plane();
-		Point tempPoint = new Point();
-		for (int i=0; i<points.size();i++)
+		else
 		{
-			tempPoint.y = points.get(i).y;
-			tempPoint.x = points.get(i).x+1;
-			temp.addPoint(tempPoint);
+			this.degrees += 90;
 		}
-		tempPoint.y = head.y;
-		tempPoint.x = head.x+1;
-		temp.setHead(tempPoint);
-		return temp;
+		ViewUtils.rotateImageView(context, this.imageView, this.degrees, R.drawable.plane);
 	}
 	
 	public Boolean checkPlane()

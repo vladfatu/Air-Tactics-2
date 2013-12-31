@@ -7,24 +7,6 @@
     android:background="#00ff00"
     tools:context=".PlanningBoardActivity" >
 
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="15dp"
-        android:src="@drawable/grid" />
-
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/imageView1"
-        android:layout_alignLeft="@+id/imageView1"
-        android:layout_marginBottom="10dp"
-        android:src="@drawable/grid_small" />
-    
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
         android:layout_width="fill_parent"
@@ -34,5 +16,53 @@
         ads:adSize="SMART_BANNER"
         ads:adUnitId="ca-app-pub-4668622539935763/6585462734" >
     </com.google.android.gms.ads.AdView>
+
+    <FrameLayout
+        android:id="@+id/frameLayoutGrid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="15dp" >
+
+        <ImageView
+            android:id="@+id/imageViewGrid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/content_description"
+            android:src="@drawable/grid" />
+
+        <ImageView
+            android:id="@+id/imageViewPlane1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/content_description"
+            android:src="@drawable/plane" />
+        
+        <ImageView
+            android:id="@+id/imageViewPlane2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/content_description"
+            android:src="@drawable/plane" />
+        
+        <ImageView
+            android:id="@+id/imageViewPlane3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/content_description"
+            android:src="@drawable/plane" />
+
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/content_description"
+        android:layout_above="@+id/frameLayoutGrid"
+        android:layout_marginBottom="10dp"
+        android:layout_alignLeft="@+id/frameLayoutGrid"
+        android:src="@drawable/grid_small" />
 
 </RelativeLayout>
