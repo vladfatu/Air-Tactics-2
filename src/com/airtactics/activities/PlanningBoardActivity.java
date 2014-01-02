@@ -3,9 +3,12 @@ package com.airtactics.activities;
 import airtactics.com.R;
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.airtactics.pojos.Plane;
@@ -14,9 +17,12 @@ import com.google.android.gms.ads.AdView;
 
 public class PlanningBoardActivity extends Activity {
 	
+	private static final String TAG = "PlanningBoardActivity";
 	private Button rotateButton;
 	private Button randomizeButton;
 	private ImageView gridImageView;
+	private FrameLayout gridLayout;
+	private Plane plane;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -31,9 +37,11 @@ public class PlanningBoardActivity extends Activity {
 	    adView.loadAd(adRequest);
 	    
 	    ImageView planeImageView = (ImageView) findViewById(R.id.imageViewPlane1);
-	    final Plane plane = new Plane(planeImageView);
+	    plane = new Plane(planeImageView);
 	    
 	    gridImageView = (ImageView) findViewById(R.id.imageViewGrid);
+	    
+	    gridLayout = (FrameLayout) findViewById(R.id.frameLayoutGrid);
 	    
 	    rotateButton = (Button) findViewById(R.id.buttonRotate);
 	    rotateButton.setOnClickListener(new OnClickListener() {
@@ -41,7 +49,7 @@ public class PlanningBoardActivity extends Activity {
 			@Override
 			public void onClick(View v)
 			{
-				plane.rotateClockwise(PlanningBoardActivity.this);
+				plane.rotateClockwise(PlanningBoardActivity.this, gridImageView.getWidth());
 			}
 		});
 	    
@@ -54,6 +62,43 @@ public class PlanningBoardActivity extends Activity {
 				plane.shiftRight(gridImageView.getWidth());
 			}
 		});
+	}
+	
+	public boolean onTouchEvent(MotionEvent event) {
+        int action = event.getAction();
+        int currentX = (int)event.getX(0) - this.gridLayout.getLeft(); 
+        int currentY = (int)event.getY(0) - this.gridLayout.getTop(); 
+        
+        float pointerStartingPosY = 0;
+
+        Log.d(TAG, "Touch Event in Activity : X: " + currentX + "Y: " + currentY);
+        
+        switch(action & MotionEvent.ACTION_MASK)
+        {
+	        case MotionEvent.ACTION_DOWN: 
+	        { 
+	        	break;
+	        }
+	        case MotionEvent.ACTION_MOVE:
+	        {
+	        	plane.moveToCenteredCoordinates(currentX, currentY, gridImageView.getWidth());
+	        	break;
+	        }
+	        case MotionEvent.ACTION_POINTER_DOWN:
+	        {
+	        	pointerStartingPosY = event.getY(1);
+	        	break;
+	        }
+	        case MotionEvent.ACTION_POINTER_UP:
+	        {
+	        		if (event.getY(1)>pointerStartingPosY+5)
+	        		{
+	        			plane.rotateClockwise(PlanningBoardActivity.this, this.gridImageView.getWidth());
+	        		}
+	        	break;
+	        }
+        }
+		return false;
 	}
 
 }

@@ -83,6 +83,51 @@ public class Plane {
 //		return temp;
 //	}
 	
+	public void moveToCenteredCoordinates(int x, int y, int gridSize)
+	{
+		moveToCoordinates(x - this.imageView.getWidth()/2, y - this.imageView.getHeight()/2 - 100, gridSize, this.imageView.getWidth(), this.imageView.getHeight());
+	}
+	
+	public void moveToCoordinates(int x, int y, int gridSize, int width, int height)
+	{
+		int unit = gridSize/10;
+		int left = x;
+		int top = y;
+		LayoutParams params = (LayoutParams) this.imageView.getLayoutParams();
+		
+		left -= (left % unit);
+		top -= (top % unit);
+		
+		int previousLeftMargin = params.leftMargin;
+		int previousTopMargin = params.topMargin;
+		
+		if (left < 0)
+		{
+			left = 0;
+		}
+		if (left + width > gridSize)
+		{
+			left = gridSize - width;
+		}
+		
+		if (top < 0)
+		{
+			top = 0;
+		}
+		if (top + height > gridSize)
+		{
+			top = gridSize - height;
+		}
+		
+		params.leftMargin = left;
+		params.topMargin = top;
+		
+		if (previousLeftMargin != params.leftMargin || previousTopMargin != params.topMargin)
+		{
+			this.imageView.setLayoutParams(params);
+		}
+	}
+	
 	public void shiftUp(int gridSize)
 	{
 		LayoutParams params = (LayoutParams) this.imageView.getLayoutParams();
@@ -179,7 +224,7 @@ public class Plane {
 		}
 	}
 	
-	public void rotateClockwise(Context context)
+	public void rotateClockwise(Context context, int gridSize)
 	{
 		if (this.degrees + 90 >= 360)
 		{
@@ -190,6 +235,8 @@ public class Plane {
 			this.degrees += 90;
 		}
 		ViewUtils.rotateImageView(context, this.imageView, this.degrees, R.drawable.plane);
+		LayoutParams params = (LayoutParams) this.imageView.getLayoutParams();
+		moveToCoordinates(params.leftMargin, params.topMargin , gridSize, this.imageView.getHeight(), imageView.getWidth());
 	}
 	
 	public Boolean checkPlane()
