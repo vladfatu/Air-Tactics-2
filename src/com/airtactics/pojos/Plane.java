@@ -5,6 +5,7 @@ import java.util.List;
 
 import airtactics.com.R;
 import android.content.Context;
+import android.util.Log;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageView;
 
@@ -14,86 +15,45 @@ import com.airtactics.utils.ViewUtils;
 public class Plane {
 	private List<Point> points = new ArrayList<Point>();
 	private Point head;
-	private int numberOfPoints;
-	private ImageView imageView;
 	private float degrees;
 	
-	public Plane(ImageView imageView)
+	public Plane()
 	{
-		numberOfPoints = 0;
 		head = new Point();
-		this.imageView = imageView;
+		for (int i = 0; i < 7; i++)
+		{
+			points.add(new Point());
+		}
 		this.degrees = 0;
 	}
-	public void setPoints(List<Point> p)
+	
+	public boolean containsPoint(Point p)
 	{
-		points = p;
-	}
-	public boolean addPoint(Point p)
-	{
-		Point temp = new Point(p.x,p.y);
-		if (numberOfPoints < 7)
+		if (head.equals(p)) 
 		{
-			points.add(temp);
 			return true;
 		}
-		else
-			return false;
-	}
-	public boolean checkPoint(Point p)
-	{
-		if (head.equals(p)) return true;
 		for (int i=0;i<points.size();i++)
-			if (p.equals(points.get(i))) return true;
+		{
+			if (p.equals(points.get(i))) 
+			{
+				return true;
+			}
+		}
 		return false;
 	}
 	
-	
-	//See if this is necessary
-	//rotate the plane 180 degrees around the point p if the plane is directed to the right
-//	public Plane rotate1to3(Point p)
-//	{
-//		Plane temp = new Plane();
-//		Point tempPoint = new Point();
-//		for (int i=0; i<points.size();i++)
-//		{
-//			tempPoint.x = 2 * p.x - points.get(i).x;
-//			tempPoint.y = points.get(i).y;
-//			temp.addPoint(tempPoint);
-//		}
-//		tempPoint.x = 2 * p.x - head.x;
-//		tempPoint.y = head.y;
-//		temp.setHead(tempPoint);
-//		return temp;
-//	}
-	//rotate the plane 180 degrees around the point p if the plane is directed up
-//	public Plane rotate0to2(Point p)
-//	{
-//		Plane temp = new Plane();
-//		Point tempPoint = new Point();
-//		for (int i=0; i<points.size();i++)
-//		{
-//			tempPoint.y = 2 * p.y - points.get(i).y;
-//			tempPoint.x = points.get(i).x;
-//			temp.addPoint(tempPoint);
-//		}
-//		tempPoint.y = 2 * p.y - head.y;
-//		tempPoint.x = head.x;
-//		temp.setHead(tempPoint);
-//		return temp;
-//	}
-	
-	public void moveToCenteredCoordinates(int x, int y, int gridSize)
+	public void moveToCenteredCoordinates(ImageView imageView, int x, int y, int gridSize)
 	{
-		moveToCoordinates(x - this.imageView.getWidth()/2, y - this.imageView.getHeight()/2 - 100, gridSize, this.imageView.getWidth(), this.imageView.getHeight());
+		moveToCoordinates(imageView, x - imageView.getWidth()/2, y - imageView.getHeight()/2 - 100, gridSize, imageView.getWidth(), imageView.getHeight());
 	}
 	
-	public void moveToCoordinates(int x, int y, int gridSize, int width, int height)
+	public void moveToCoordinates(ImageView imageView, int x, int y, int gridSize, int width, int height)
 	{
 		int unit = gridSize/10;
 		int left = x;
 		int top = y;
-		LayoutParams params = (LayoutParams) this.imageView.getLayoutParams();
+		LayoutParams params = (LayoutParams) imageView.getLayoutParams();
 		
 		left -= (left % unit);
 		top -= (top % unit);
@@ -124,107 +84,168 @@ public class Plane {
 		
 		if (previousLeftMargin != params.leftMargin || previousTopMargin != params.topMargin)
 		{
-			this.imageView.setLayoutParams(params);
+			imageView.setLayoutParams(params);
+			
+			if (this.degrees == 0)
+			{
+				this.getHead().x = left/unit + 1;
+				this.getHead().y = top/unit;
+			}
+			else if (this.degrees == 90)
+			{
+				this.getHead().x = left/unit + 3;
+				this.getHead().y = top/unit + 1;
+			}
+			else if (this.degrees == 180)
+			{
+				this.getHead().x = left/unit + 1;
+				this.getHead().y = top/unit + 3;
+			}
+			else if (this.degrees == 270)
+			{
+				this.getHead().x = left/unit;
+				this.getHead().y = top/unit + 1;
+			}
+			
+			
+			setPositionsAfterHead();
+			Log.d("TAG", "Head Position: " + this.getHead().x + ", " + this.getHead().y);
+			
 		}
-	}
-	
-	public void shiftUp(int gridSize)
-	{
-		LayoutParams params = (LayoutParams) this.imageView.getLayoutParams();
-		if (params.topMargin - gridSize/10 >= 0)
-		{
-			params.topMargin -= gridSize/10;
-			this.imageView.setLayoutParams(params);
 		
-			//TODO
-//			Plane temp = new Plane();
-//			Point tempPoint = new Point();
-//			for (int i=0; i<points.size();i++)
-//			{
-//				tempPoint.y = points.get(i).y-1;
-//				tempPoint.x = points.get(i).x;
-//				temp.addPoint(tempPoint);
-//			}
-//			tempPoint.y = head.y-1;
-//			tempPoint.x = head.x;
-//			temp.setHead(tempPoint);
-//			return temp;
-		}
 	}
 	
-	public void shiftDown(int gridSize)
+	public void moveImageViewAfterPosition(ImageView imageView, int gridSize)
 	{
-		LayoutParams params = (LayoutParams) this.imageView.getLayoutParams();
-		if (params.topMargin + this.imageView.getHeight() + gridSize/10 <= gridSize)
+		int unit = gridSize/10;
+		LayoutParams params = (LayoutParams) imageView.getLayoutParams();
+		int previousLeftMargin = params.leftMargin;
+		int previousTopMargin = params.topMargin;
+		
+		if (this.degrees == 0)
 		{
-			params.topMargin += gridSize/10;
-			this.imageView.setLayoutParams(params);
-			
-			//TODO
-//			Plane temp = new Plane();
-//			Point tempPoint = new Point();
-//			for (int i=0; i<points.size();i++)
-//			{
-//				tempPoint.y = points.get(i).y+1;
-//				tempPoint.x = points.get(i).x;
-//				temp.addPoint(tempPoint);
-//			}
-//			tempPoint.y = head.y+1;
-//			tempPoint.x = head.x;
-//			temp.setHead(tempPoint);
-//			return temp;
+			params.leftMargin = (this.getHead().x - 1) * unit;
+			params.topMargin = this.getHead().y * unit;
+		}
+		else if (this.degrees == 90)
+		{
+			params.leftMargin = (this.getHead().x - 3) * unit;
+			params.topMargin = (this.getHead().y - 1) * unit;
+		}
+		else if (this.degrees == 180)
+		{
+			params.leftMargin = (this.getHead().x - 1) * unit;
+			params.topMargin = (this.getHead().y - 3) * unit;
+		}
+		else if (this.degrees == 270)
+		{
+			params.leftMargin = this.getHead().x * unit;
+			params.topMargin = (this.getHead().y - 1) * unit;
+		}
+		
+		if (previousLeftMargin != params.leftMargin || previousTopMargin != params.topMargin)
+		{
+			imageView.setLayoutParams(params);
 		}
 	}
 	
-	public void shiftLeft(int gridSize)
+	private void setPositionsAfterHead()
 	{
-		LayoutParams params = (LayoutParams) this.imageView.getLayoutParams();
-		if (params.leftMargin - gridSize/10 >= 0)
+		if (this.degrees == 0)
 		{
-			params.leftMargin -= gridSize/10;
-			this.imageView.setLayoutParams(params);
-			
-			//TODO
-//			Plane temp = new Plane();
-//			Point tempPoint = new Point();
-//			for (int i=0; i<points.size();i++)
-//			{
-//				tempPoint.y = points.get(i).y;
-//				tempPoint.x = points.get(i).x-1;
-//				temp.addPoint(tempPoint);
-//			}
-//			tempPoint.y = head.y;
-//			tempPoint.x = head.x-1;
-//			temp.setHead(tempPoint);
-//			return temp;
+			this.points.get(0).x = this.head.x - 1;
+			this.points.get(0).y = this.head.y + 1;
+
+			this.points.get(1).x = this.head.x;
+			this.points.get(1).y = this.head.y + 1;
+
+			this.points.get(2).x = this.head.x + 1;
+			this.points.get(2).y = this.head.y + 1;
+
+			this.points.get(3).x = this.head.x;
+			this.points.get(3).y = this.head.y + 2;
+
+			this.points.get(4).x = this.head.x - 1;
+			this.points.get(4).y = this.head.y + 3;
+
+			this.points.get(5).x = this.head.x;
+			this.points.get(5).y = this.head.y + 3;
+
+			this.points.get(6).x = this.head.x + 1;
+			this.points.get(6).y = this.head.y + 3;
+		}
+		else if (this.degrees == 90)
+		{
+			this.points.get(0).x = this.head.x - 1;
+			this.points.get(0).y = this.head.y - 1;
+
+			this.points.get(1).x = this.head.x - 1;
+			this.points.get(1).y = this.head.y;
+
+			this.points.get(2).x = this.head.x - 1;
+			this.points.get(2).y = this.head.y + 1;
+
+			this.points.get(3).x = this.head.x - 2;
+			this.points.get(3).y = this.head.y;
+
+			this.points.get(4).x = this.head.x - 3;
+			this.points.get(4).y = this.head.y - 1;
+
+			this.points.get(5).x = this.head.x - 3;
+			this.points.get(5).y = this.head.y;
+
+			this.points.get(6).x = this.head.x - 3;
+			this.points.get(6).y = this.head.y + 1;
+		}
+		else if (this.degrees == 180)
+		{
+			this.points.get(0).x = this.head.x + 1;
+			this.points.get(0).y = this.head.y - 1;
+
+			this.points.get(1).x = this.head.x;
+			this.points.get(1).y = this.head.y - 1;
+
+			this.points.get(2).x = this.head.x - 1;
+			this.points.get(2).y = this.head.y - 1;
+
+			this.points.get(3).x = this.head.x;
+			this.points.get(3).y = this.head.y - 2;
+
+			this.points.get(4).x = this.head.x + 1;
+			this.points.get(4).y = this.head.y - 3;
+
+			this.points.get(5).x = this.head.x;
+			this.points.get(5).y = this.head.y - 3;
+
+			this.points.get(6).x = this.head.x - 1;
+			this.points.get(6).y = this.head.y - 3;
+		}
+		else if (this.degrees == 270)
+		{
+			this.points.get(0).x = this.head.x + 1;
+			this.points.get(0).y = this.head.y + 1;
+
+			this.points.get(1).x = this.head.x + 1;
+			this.points.get(1).y = this.head.y;
+
+			this.points.get(2).x = this.head.x + 1;
+			this.points.get(2).y = this.head.y - 1;
+
+			this.points.get(3).x = this.head.x + 2;
+			this.points.get(3).y = this.head.y;
+
+			this.points.get(4).x = this.head.x + 3;
+			this.points.get(4).y = this.head.y + 1;
+
+			this.points.get(5).x = this.head.x + 3;
+			this.points.get(5).y = this.head.y;
+
+			this.points.get(6).x = this.head.x + 3;
+			this.points.get(6).y = this.head.y - 1;
 		}
 	}
 	
-	public void shiftRight(int gridSize)
-	{
-		LayoutParams params = (LayoutParams) this.imageView.getLayoutParams();
-		if (params.leftMargin + this.imageView.getWidth() + gridSize/10 <= gridSize)
-		{
-			params.leftMargin += gridSize/10;
-			this.imageView.setLayoutParams(params);
-			
-			//TODO
-//			Plane temp = new Plane();
-//			Point tempPoint = new Point();
-//			for (int i=0; i<points.size();i++)
-//			{
-//				tempPoint.y = points.get(i).y;
-//				tempPoint.x = points.get(i).x+1;
-//				temp.addPoint(tempPoint);
-//			}
-//			tempPoint.y = head.y;
-//			tempPoint.x = head.x+1;
-//			temp.setHead(tempPoint);
-//			return temp;
-		}
-	}
-	
-	public void rotateClockwise(Context context, int gridSize)
+	public void rotateClockwise(Context context, ImageView imageView, int gridSize)
 	{
 		if (this.degrees + 90 >= 360)
 		{
@@ -234,9 +255,9 @@ public class Plane {
 		{
 			this.degrees += 90;
 		}
-		ViewUtils.rotateImageView(context, this.imageView, this.degrees, R.drawable.plane);
-		LayoutParams params = (LayoutParams) this.imageView.getLayoutParams();
-		moveToCoordinates(params.leftMargin, params.topMargin , gridSize, this.imageView.getHeight(), imageView.getWidth());
+		ViewUtils.rotateImageView(context, imageView, this.degrees, R.drawable.plane);
+		LayoutParams params = (LayoutParams) imageView.getLayoutParams();
+		moveToCoordinates(imageView, params.leftMargin, params.topMargin , gridSize, imageView.getHeight(), imageView.getWidth());
 	}
 	
 	public Boolean checkPlane()
@@ -252,9 +273,17 @@ public class Plane {
 	
 	public Boolean equals(Plane p)
 	{
-		if (!head.equals(p.head)) return false;
+		if (!head.equals(p.head)) 
+		{
+			return false;
+		}
 		for (int i=0;i<points.size();i++)
-			if (!p.checkPoint(points.get(i))) return false;
+		{
+			if (!p.containsPoint(points.get(i))) 
+			{
+				return false;
+			}
+		}
 		return true;
 	}
 	

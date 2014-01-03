@@ -32,37 +32,44 @@
             android:contentDescription="@string/content_description"
             android:src="@drawable/grid" />
 
-        <ImageView
-            android:id="@+id/imageViewPlane1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/content_description"
-            android:src="@drawable/plane" />
-        
-        <ImageView
-            android:id="@+id/imageViewPlane2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/content_description"
-            android:src="@drawable/plane" />
-        
-        <ImageView
-            android:id="@+id/imageViewPlane3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/content_description"
-            android:src="@drawable/plane" />
-
     </FrameLayout>
 
-    <ImageView
-        android:id="@+id/imageView2"
+    <FrameLayout
+        android:id="@+id/frameLayoutGridSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="@string/content_description"
         android:layout_above="@+id/frameLayoutGrid"
-        android:layout_marginBottom="10dp"
         android:layout_alignLeft="@+id/frameLayoutGrid"
-        android:src="@drawable/grid_small" />
+        android:layout_marginBottom="10dp" >
+
+        <ImageView
+            android:id="@+id/imageViewGridSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/content_description"
+            android:src="@drawable/grid_small" />
+
+        <ImageView
+            android:id="@+id/imageViewPlaneSmall1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/content_description"
+            android:src="@drawable/plane_small" />
+
+        <ImageView
+            android:id="@+id/imageViewPlaneSmall2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/content_description"
+            android:src="@drawable/plane_small" />
+
+        <ImageView
+            android:id="@+id/imageViewPlaneSmall3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/content_description"
+            android:src="@drawable/plane_small" />
+
+    </FrameLayout>
 
 </RelativeLayout>
