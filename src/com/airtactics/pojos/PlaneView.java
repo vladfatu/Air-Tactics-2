@@ -1,12 +1,14 @@
 package com.airtactics.pojos;
 
+import com.airtactics.interfaces.PlaneListener;
+
 import android.widget.ImageView;
 
 /**
  * @author Vlad
  *
  */
-public class PlaneView {
+public class PlaneView implements PlaneListener{
 	
 	private Plane plane;
 	
@@ -16,6 +18,13 @@ public class PlaneView {
 	{
 		this.plane = plane;
 		this.imageView = imageView;
+	}
+	
+	@Override
+	public void onChange()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 	public Plane getPlane()
