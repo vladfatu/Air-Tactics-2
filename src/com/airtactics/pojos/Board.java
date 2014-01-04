@@ -6,6 +6,10 @@ import java.util.List;
 import android.util.Log;
 
 
+/**
+ * @author Vlad
+ *
+ */
 public class Board {
 	
 	private Tile[][] tileMatrix;
@@ -26,7 +30,24 @@ public class Board {
     			this.tileMatrix[i][j] = new Tile(i,j);
     	}
 		
-		this.setPlanes(new ArrayList<Plane>());
+		this.planes = new ArrayList<Plane>();
+		
+		this.planes.add(new Plane());
+		this.planes.add(new Plane());
+		this.planes.add(new Plane());
+		
+		this.planes.get(0).getHead().x = 1;
+		this.planes.get(0).getHead().y = 0;
+		this.planes.get(0).setPositionsAfterHead();
+		
+		this.planes.get(1).getHead().x = 4;
+		this.planes.get(1).getHead().y = 1;
+		this.planes.get(1).setPositionsAfterHead();
+		
+		this.planes.get(2).getHead().x = 7;
+		this.planes.get(2).getHead().y = 2;
+		this.planes.get(2).setPositionsAfterHead();
+		
 	}
 
 	public List<Plane> getPlanes()

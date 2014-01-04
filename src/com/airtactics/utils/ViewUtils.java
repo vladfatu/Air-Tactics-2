@@ -7,6 +7,10 @@ import android.graphics.Matrix;
 import android.widget.ImageView;
 
 
+/**
+ * @author Vlad
+ *
+ */
 public class ViewUtils {
 	
 	public static void rotateImageView(Context context, ImageView imageView, float angle, int imageId)

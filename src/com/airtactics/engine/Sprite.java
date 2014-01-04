@@ -7,6 +7,10 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 
+/**
+ * @author Vlad
+ *
+ */
 public class Sprite {
 
 	private Bitmap image;

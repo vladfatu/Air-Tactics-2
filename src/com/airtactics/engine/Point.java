@@ -1,5 +1,9 @@
 package com.airtactics.engine;
 
+/**
+ * @author Vlad
+ *
+ */
 public class Point {
 	
 	public int x,y;

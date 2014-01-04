@@ -8,6 +8,10 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 
+/**
+ * @author Vlad
+ *
+ */
 public class Panel extends View {
 
 	private ArrayList<Sprite> spritesList = new ArrayList<Sprite>();

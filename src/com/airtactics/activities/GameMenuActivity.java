@@ -11,6 +11,10 @@ import android.widget.Button;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
+/**
+ * @author Vlad
+ *
+ */
 public class GameMenuActivity extends Activity{
 	
 	private Button buttonSinglePlayer;

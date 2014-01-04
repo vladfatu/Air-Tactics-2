@@ -7,6 +7,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 
+/**
+ * @author Vlad
+ *
+ */
 public class SplashScreenActivity extends Activity {
 
 	@Override

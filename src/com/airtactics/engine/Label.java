@@ -4,6 +4,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 
+/**
+ * @author Vlad
+ *
+ */
 public class Label {
 	private String text;
 	private Point position;

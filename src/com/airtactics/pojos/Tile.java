@@ -2,6 +2,10 @@ package com.airtactics.pojos;
 
 import com.airtactics.engine.Point;
 
+/**
+ * @author Vlad
+ *
+ */
 public class Tile {
 
 	private boolean hit;

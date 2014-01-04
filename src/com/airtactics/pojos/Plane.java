@@ -4,14 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import android.content.Context;
-import android.util.Log;
-import android.widget.FrameLayout.LayoutParams;
-import android.widget.ImageView;
-
 import com.airtactics.engine.Point;
-import com.airtactics.utils.ViewUtils;
 
+/**
+ * @author Vlad
+ *
+ */
 public class Plane {
 
 	private List<Point> points = new ArrayList<Point>();
@@ -42,78 +40,6 @@ public class Plane {
 			}
 		}
 		return false;
-	}
-	
-	public void moveToCenteredCoordinates(ImageView imageView, int x, int y, int gridSize)
-	{
-		moveToCoordinates(imageView, x - imageView.getWidth()/2, y - imageView.getHeight()/2 - 100, gridSize, imageView.getWidth(), imageView.getHeight());
-	}
-	
-	public void moveToCoordinates(ImageView imageView, int x, int y, int gridSize, int width, int height)
-	{
-		int unit = gridSize/10;
-		int left = x;
-		int top = y;
-		LayoutParams params = (LayoutParams) imageView.getLayoutParams();
-		
-		left -= (left % unit);
-		top -= (top % unit);
-		
-		int previousLeftMargin = params.leftMargin;
-		int previousTopMargin = params.topMargin;
-		
-		if (left < 0)
-		{
-			left = 0;
-		}
-		if (left + width > gridSize)
-		{
-			left = gridSize - width;
-		}
-		
-		if (top < 0)
-		{
-			top = 0;
-		}
-		if (top + height > gridSize)
-		{
-			top = gridSize - height;
-		}
-		
-		params.leftMargin = left;
-		params.topMargin = top;
-		
-		if (previousLeftMargin != params.leftMargin || previousTopMargin != params.topMargin)
-		{
-			imageView.setLayoutParams(params);
-			
-			if (this.degrees == 0)
-			{
-				this.getHead().x = left/unit + 1;
-				this.getHead().y = top/unit;
-			}
-			else if (this.degrees == 90)
-			{
-				this.getHead().x = left/unit + 3;
-				this.getHead().y = top/unit + 1;
-			}
-			else if (this.degrees == 180)
-			{
-				this.getHead().x = left/unit + 1;
-				this.getHead().y = top/unit + 3;
-			}
-			else if (this.degrees == 270)
-			{
-				this.getHead().x = left/unit;
-				this.getHead().y = top/unit + 1;
-			}
-			
-			
-			setPositionsAfterHead();
-			Log.d("TAG", "Head Position: " + this.getHead().x + ", " + this.getHead().y);
-			
-		}
-		
 	}
 	
 	public void setRandomDegrees()
@@ -151,42 +77,7 @@ public class Plane {
 		setPositionsAfterHead();
 	}
 	
-	public void moveImageViewAfterPosition(Context context, ImageView imageView, int gridSize, int imageId)
-	{
-		rotateImageView(context, imageView, gridSize, imageId);
-		int unit = gridSize/10;
-		LayoutParams params = (LayoutParams) imageView.getLayoutParams();
-		int previousLeftMargin = params.leftMargin;
-		int previousTopMargin = params.topMargin;
-		
-		if (this.degrees == 0)
-		{
-			params.leftMargin = (this.getHead().x - 1) * unit;
-			params.topMargin = this.getHead().y * unit;
-		}
-		else if (this.degrees == 90)
-		{
-			params.leftMargin = (this.getHead().x - 3) * unit;
-			params.topMargin = (this.getHead().y - 1) * unit;
-		}
-		else if (this.degrees == 180)
-		{
-			params.leftMargin = (this.getHead().x - 1) * unit;
-			params.topMargin = (this.getHead().y - 3) * unit;
-		}
-		else if (this.degrees == 270)
-		{
-			params.leftMargin = this.getHead().x * unit;
-			params.topMargin = (this.getHead().y - 1) * unit;
-		}
-		
-		if (previousLeftMargin != params.leftMargin || previousTopMargin != params.topMargin)
-		{
-			imageView.setLayoutParams(params);
-		}
-	}
-	
-	private void setPositionsAfterHead()
+	public void setPositionsAfterHead()
 	{
 		if (this.degrees == 0)
 		{
@@ -282,7 +173,7 @@ public class Plane {
 		}
 	}
 	
-	public void rotateClockwise(Context context, ImageView imageView, int gridSize, int imageId)
+	public void rotateClockwise()
 	{
 		if (this.degrees + 90 >= 360)
 		{
@@ -292,14 +183,6 @@ public class Plane {
 		{
 			this.degrees += 90;
 		}
-		rotateImageView(context, imageView, gridSize, imageId);
-		LayoutParams params = (LayoutParams) imageView.getLayoutParams();
-		moveToCoordinates(imageView, params.leftMargin, params.topMargin , gridSize, imageView.getHeight(), imageView.getWidth());
-	}
-	
-	private void rotateImageView(Context context, ImageView imageView, int gridSize, int imageId)
-	{
-		ViewUtils.rotateImageView(context, imageView, this.degrees, imageId);
 	}
 	
 	public Boolean hasCollisionsWithPlane(Plane plane)
@@ -353,6 +236,11 @@ public class Plane {
 	public float getDegrees()
 	{
 		return degrees;
+	}
+	
+	public void setDegrees(float degrees)
+	{
+		this.degrees = degrees;
 	}
 
 }

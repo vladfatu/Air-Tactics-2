@@ -12,10 +12,14 @@ import android.widget.RelativeLayout;
 
 import com.airtactics.managers.GameManager;
 import com.airtactics.pojos.Game;
-import com.airtactics.pojos.Plane;
+import com.airtactics.pojos.PlaneView;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
+/**
+ * @author Vlad
+ *
+ */
 public class PlayingBoardActivity extends Activity {
 
 	public final static String GAME_ID = "GAME_ID";
@@ -70,16 +74,34 @@ public class PlayingBoardActivity extends Activity {
 	private void setupGame()
 	{
 		ImageView planeImageView1 = (ImageView) findViewById(R.id.imageViewPlaneSmall1);
-		Plane plane1 = game.getYourBoard().getPlanes().get(0);
-		plane1.moveImageViewAfterPosition(this, planeImageView1, gridSmallImageView.getWidth(), R.drawable.plane_small);
+		PlaneView planeView1 = new PlaneView(this, 
+				game.getYourBoard().getPlanes().get(0),
+				planeImageView1,
+				this.gridSmallImageView.getWidth(),
+				R.drawable.plane_small,
+				R.drawable.redplane_small,
+				game.getYourBoard());
+		planeView1.updateImageView();
 
 		ImageView planeImageView2 = (ImageView) findViewById(R.id.imageViewPlaneSmall2);
-		Plane plane2 = game.getYourBoard().getPlanes().get(1);
-		plane2.moveImageViewAfterPosition(this, planeImageView2, gridSmallImageView.getWidth(), R.drawable.plane_small);
+		PlaneView planeView2 = new PlaneView(this, 
+				game.getYourBoard().getPlanes().get(1),
+				planeImageView2,
+				this.gridSmallImageView.getWidth(),
+				R.drawable.plane_small,
+				R.drawable.redplane_small,
+				game.getYourBoard());
+		planeView2.updateImageView();
 
 		ImageView planeImageView3 = (ImageView) findViewById(R.id.imageViewPlaneSmall3);
-		Plane plane3 = game.getYourBoard().getPlanes().get(2);
-		plane3.moveImageViewAfterPosition(this, planeImageView3, gridSmallImageView.getWidth(), R.drawable.plane_small);
+		PlaneView planeView3 = new PlaneView(this, 
+				game.getYourBoard().getPlanes().get(2),
+				planeImageView3,
+				this.gridSmallImageView.getWidth(),
+				R.drawable.plane_small,
+				R.drawable.redplane_small,
+				game.getYourBoard());
+		planeView3.updateImageView();
 	}
 
 }
