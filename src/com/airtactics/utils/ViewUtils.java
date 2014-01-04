@@ -11,11 +11,6 @@ public class ViewUtils {
 	
 	public static void rotateImageView(Context context, ImageView imageView, float angle, int imageId)
 	{
-//		Matrix matrix=new Matrix();
-//		imageView.setScaleType(ScaleType.MATRIX);   //required
-//		matrix.postRotate(angle, imageView.getDrawable().getBounds().width()/2, imageView.getDrawable().getBounds().height()/2);
-//		imageView.setImageMatrix(matrix);
-		
 		Bitmap myImg = BitmapFactory.decodeResource(context.getResources(), imageId);
 
 		Matrix matrix = new Matrix();

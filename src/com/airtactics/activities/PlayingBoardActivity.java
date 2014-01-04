@@ -71,15 +71,15 @@ public class PlayingBoardActivity extends Activity {
 	{
 		ImageView planeImageView1 = (ImageView) findViewById(R.id.imageViewPlaneSmall1);
 		Plane plane1 = game.getYourBoard().getPlanes().get(0);
-		plane1.moveImageViewAfterPosition(planeImageView1, gridSmallImageView.getWidth());
+		plane1.moveImageViewAfterPosition(this, planeImageView1, gridSmallImageView.getWidth(), R.drawable.plane_small);
 
 		ImageView planeImageView2 = (ImageView) findViewById(R.id.imageViewPlaneSmall2);
 		Plane plane2 = game.getYourBoard().getPlanes().get(1);
-		plane2.moveImageViewAfterPosition(planeImageView2, gridSmallImageView.getWidth());
+		plane2.moveImageViewAfterPosition(this, planeImageView2, gridSmallImageView.getWidth(), R.drawable.plane_small);
 
 		ImageView planeImageView3 = (ImageView) findViewById(R.id.imageViewPlaneSmall3);
 		Plane plane3 = game.getYourBoard().getPlanes().get(2);
-		plane3.moveImageViewAfterPosition(planeImageView3, gridSmallImageView.getWidth());
+		plane3.moveImageViewAfterPosition(this, planeImageView3, gridSmallImageView.getWidth(), R.drawable.plane_small);
 	}
 
 }

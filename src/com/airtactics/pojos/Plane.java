@@ -2,8 +2,8 @@ package com.airtactics.pojos;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
-import airtactics.com.R;
 import android.content.Context;
 import android.util.Log;
 import android.widget.FrameLayout.LayoutParams;
@@ -13,6 +13,7 @@ import com.airtactics.engine.Point;
 import com.airtactics.utils.ViewUtils;
 
 public class Plane {
+
 	private List<Point> points = new ArrayList<Point>();
 	private Point head;
 	private float degrees;
@@ -115,8 +116,44 @@ public class Plane {
 		
 	}
 	
-	public void moveImageViewAfterPosition(ImageView imageView, int gridSize)
+	public void setRandomDegrees()
 	{
+		Random r = new Random();
+		int randomInt = r.nextInt(4);
+		this.degrees = randomInt * 90;
+	}
+	
+	public void setRandomPosition()
+	{
+		Random r = new Random();
+		
+		if (this.degrees == 0)
+		{
+			this.head.x = r.nextInt(8) + 1;
+			this.head.y = r.nextInt(7);
+		}
+		else if (this.degrees == 90)
+		{
+			this.head.x = r.nextInt(7) + 3;
+			this.head.y = r.nextInt(8) + 1;
+		}
+		else if (this.degrees == 180)
+		{
+			this.head.x = r.nextInt(8) + 1;
+			this.head.y = r.nextInt(7) + 3;
+		}
+		else if (this.degrees == 270)
+		{
+			this.head.x = r.nextInt(7);
+			this.head.y = r.nextInt(8) + 1;
+		}
+		
+		setPositionsAfterHead();
+	}
+	
+	public void moveImageViewAfterPosition(Context context, ImageView imageView, int gridSize, int imageId)
+	{
+		rotateImageView(context, imageView, gridSize, imageId);
 		int unit = gridSize/10;
 		LayoutParams params = (LayoutParams) imageView.getLayoutParams();
 		int previousLeftMargin = params.leftMargin;
@@ -245,7 +282,7 @@ public class Plane {
 		}
 	}
 	
-	public void rotateClockwise(Context context, ImageView imageView, int gridSize)
+	public void rotateClockwise(Context context, ImageView imageView, int gridSize, int imageId)
 	{
 		if (this.degrees + 90 >= 360)
 		{
@@ -255,20 +292,31 @@ public class Plane {
 		{
 			this.degrees += 90;
 		}
-		ViewUtils.rotateImageView(context, imageView, this.degrees, R.drawable.plane);
+		rotateImageView(context, imageView, gridSize, imageId);
 		LayoutParams params = (LayoutParams) imageView.getLayoutParams();
 		moveToCoordinates(imageView, params.leftMargin, params.topMargin , gridSize, imageView.getHeight(), imageView.getWidth());
 	}
 	
-	public Boolean checkPlane()
+	private void rotateImageView(Context context, ImageView imageView, int gridSize, int imageId)
 	{
-		//TODO
-//		if (head.x < 0 || head.x > 9 || head.y < 0 || head.y > 9 || Opponent.checkPoint(head))
-//			return false;
-//		for (int i=0;i<points.size();i++)
-//			if (points.get(i).x < 0 || points.get(i).x > 9 || points.get(i).y < 0 || points.get(i).y > 9 || Opponent.checkPoint(points.get(i)))
-//				return false;
-		return true;
+		ViewUtils.rotateImageView(context, imageView, this.degrees, imageId);
+	}
+	
+	public Boolean hasCollisionsWithPlane(Plane plane)
+	{
+		if (containsPoint(plane.getHead()))
+		{
+			return true;
+		}
+		
+		for (Point point : plane.getPoints())
+		{
+			if (containsPoint(point))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public Boolean equals(Plane p)
@@ -295,6 +343,16 @@ public class Plane {
 	public Point getHead()
 	{
 		return head;
+	}
+	
+	public List<Point> getPoints()
+	{
+		return points;
+	}
+	
+	public float getDegrees()
+	{
+		return degrees;
 	}
 
 }

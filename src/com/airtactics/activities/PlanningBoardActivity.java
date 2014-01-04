@@ -29,6 +29,9 @@ public class PlanningBoardActivity extends Activity {
 	private ImageView gridImageView;
 	private FrameLayout gridLayout;
 	private Plane selectedPlane;
+	private ImageView planeImageView1;
+	private ImageView planeImageView2;
+	private ImageView planeImageView3;
 	private ImageView selectedPlaneImageView;
 	private Game game;
 
@@ -56,7 +59,7 @@ public class PlanningBoardActivity extends Activity {
 			{
 				if (selectedPlane != null)
 				{
-					selectedPlane.rotateClockwise(PlanningBoardActivity.this, selectedPlaneImageView, gridImageView.getWidth());
+					selectedPlane.rotateClockwise(PlanningBoardActivity.this, selectedPlaneImageView, gridImageView.getWidth(), R.drawable.plane);
 				}
 			}
 		});
@@ -67,7 +70,8 @@ public class PlanningBoardActivity extends Activity {
 			@Override
 			public void onClick(View v)
 			{
-				//TODO
+				game.getYourBoard().randomizePlanes();
+				updatePlaneImageViews();
 			}
 		});
 		
@@ -91,7 +95,7 @@ public class PlanningBoardActivity extends Activity {
 		game = new Game();
 		game.setYourBoard(new Board());
 
-		final ImageView planeImageView1 = (ImageView) findViewById(R.id.imageViewPlane1);
+		planeImageView1 = (ImageView) findViewById(R.id.imageViewPlane1);
 		final Plane plane1 = new Plane();
 		game.getYourBoard().getPlanes().add(plane1);
 		planeImageView1.setOnTouchListener(new OnTouchListener() {
@@ -105,7 +109,7 @@ public class PlanningBoardActivity extends Activity {
 			}
 		});
 
-		final ImageView planeImageView2 = (ImageView) findViewById(R.id.imageViewPlane2);
+		planeImageView2 = (ImageView) findViewById(R.id.imageViewPlane2);
 		final Plane plane2 = new Plane();
 		game.getYourBoard().getPlanes().add(plane2);
 		planeImageView2.setOnTouchListener(new OnTouchListener() {
@@ -119,7 +123,7 @@ public class PlanningBoardActivity extends Activity {
 			}
 		});
 
-		final ImageView planeImageView3 = (ImageView) findViewById(R.id.imageViewPlane3);
+		planeImageView3 = (ImageView) findViewById(R.id.imageViewPlane3);
 		final Plane plane3 = new Plane();
 		game.getYourBoard().getPlanes().add(plane3);
 		planeImageView3.setOnTouchListener(new OnTouchListener() {
@@ -171,13 +175,20 @@ public class PlanningBoardActivity extends Activity {
 				{
 					if (event.getY(1) > pointerStartingPosY + 5)
 					{
-						selectedPlane.rotateClockwise(PlanningBoardActivity.this, this.selectedPlaneImageView, this.gridImageView.getWidth());
+						selectedPlane.rotateClockwise(PlanningBoardActivity.this, this.selectedPlaneImageView, this.gridImageView.getWidth(), R.drawable.plane);
 					}
 				}
 				break;
 			}
 		}
 		return false;
+	}
+	
+	private void updatePlaneImageViews()
+	{
+		game.getYourBoard().getPlanes().get(0).moveImageViewAfterPosition(this, planeImageView1, gridImageView.getWidth(), R.drawable.plane);
+		game.getYourBoard().getPlanes().get(1).moveImageViewAfterPosition(this, planeImageView2, gridImageView.getWidth(), R.drawable.plane);
+		game.getYourBoard().getPlanes().get(2).moveImageViewAfterPosition(this, planeImageView3, gridImageView.getWidth(), R.drawable.plane);
 	}
 
 }
