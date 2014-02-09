@@ -5,8 +5,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -24,9 +27,13 @@ public class PlayingBoardActivity extends Activity {
 
 	public final static String GAME_ID = "GAME_ID";
 
+	private static final String TAG = "PlayingBoardActivity";
+
 	private Game game;
 
 	private ImageView gridSmallImageView;
+	private ImageView gridLargeImageView;
+	private FrameLayout gridFrameLayout;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -49,6 +56,8 @@ public class PlayingBoardActivity extends Activity {
 		adView.loadAd(adRequest);
 
 		gridSmallImageView = (ImageView) findViewById(R.id.imageViewGridSmall);
+		gridLargeImageView = (ImageView) findViewById(R.id.imageViewGrid);
+		gridFrameLayout = (FrameLayout) findViewById(R.id.frameLayoutGrid);
 
 		final RelativeLayout layout = (RelativeLayout) findViewById(R.id.relativeLayout);
 		ViewTreeObserver vto = layout.getViewTreeObserver();
@@ -102,6 +111,36 @@ public class PlayingBoardActivity extends Activity {
 				R.drawable.redplane_small,
 				game.getYourBoard());
 		planeView3.updateImageView();
+	}
+	
+	public boolean onTouchEvent(MotionEvent event)
+	{
+		int action = event.getAction();
+		int currentX = (int) event.getX(0) - this.gridFrameLayout.getLeft();
+		int currentY = (int) event.getY(0) - this.gridFrameLayout.getTop();
+
+		Log.d(TAG, "Touch Event in Activity : X: " + currentX + "Y: " + currentY);
+
+		if (currentX > 0 && currentX < this.gridLargeImageView.getWidth()
+				&& currentY > 0 && currentY < this.gridLargeImageView.getHeight())
+		{
+			switch (action & MotionEvent.ACTION_MASK)
+			{
+				case MotionEvent.ACTION_DOWN:
+				{
+					ImageView imageView = new ImageView(this);
+					imageView.setImageResource(R.drawable.hit_head);
+					
+					FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+
+					lp.setMargins(currentX, currentY, 0, 0);
+
+					this.gridFrameLayout.addView(imageView, lp);
+					break;
+				}
+			}
+		}
+		return false;
 	}
 
 }
