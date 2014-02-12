@@ -13,9 +13,11 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.airtactics.engine.Point;
 import com.airtactics.managers.GameManager;
 import com.airtactics.pojos.Game;
 import com.airtactics.pojos.PlaneView;
+import com.airtactics.pojos.Tile;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
@@ -128,14 +130,17 @@ public class PlayingBoardActivity extends Activity {
 			{
 				case MotionEvent.ACTION_DOWN:
 				{
-					ImageView imageView = new ImageView(this);
-					imageView.setImageResource(R.drawable.hit_head);
-					
 					FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
 
-					lp.setMargins(currentX, currentY, 0, 0);
-
-					this.gridFrameLayout.addView(imageView, lp);
+					Tile tile = this.game.getOpponentBoard().clickBoard(this, currentX, currentY, this.gridLargeImageView.getWidth());
+					
+					if (tile != null)
+					{
+						Point viewPosition = tile.getViewPosition(this.gridLargeImageView.getWidth());
+						lp.setMargins(viewPosition.x, viewPosition.y, 0, 0);
+						
+						this.gridFrameLayout.addView(tile.getImageView(), lp);
+					}
 					break;
 				}
 			}

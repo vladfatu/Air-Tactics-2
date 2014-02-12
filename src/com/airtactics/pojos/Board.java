@@ -3,7 +3,12 @@ package com.airtactics.pojos;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Context;
 import android.util.Log;
+import android.widget.ImageView;
+
+import com.airtactics.engine.Point;
+import com.airtactics.pojos.Tile.TileType;
 
 
 /**
@@ -14,6 +19,7 @@ public class Board {
 	
 	private Tile[][] tileMatrix;
 	private List<Plane> planes;
+	private Tile selectedTile;
 	
 	public Board()
 	{
@@ -90,6 +96,70 @@ public class Board {
 				collisions = false;
 			}
 		}
+	}
+	
+	public Tile clickBoard(Context context, int left, int top, int gridSize)
+	{
+		int unit = gridSize/10;
+		
+		int x = left / unit;
+		int y = top / unit;
+		
+		Tile tile = this.tileMatrix[x][y];
+		if (tile.getType() == TileType.NONE)
+		{
+			if (tile.isSelected())
+			{
+				clearSelectedTile();
+				tile.setType(checkPoint(new Point(x, y)));
+			}
+			else
+			{
+				selectTile(tile);
+			}
+			ImageView imageView = new ImageView(context);
+			imageView.setImageResource(tile.getResourceId());
+			tile.setImageView(imageView);
+			return tile;
+		}
+		else
+		{
+			return null;
+		}
+		
+	}
+	
+	private void clearSelectedTile()
+	{
+		this.selectedTile.setSelected(false);
+		this.selectedTile = null;
+	}
+	
+	private void selectTile(Tile tile)
+	{
+		if (this.selectedTile != null)
+		{
+			this.selectedTile.setSelected(false);
+			this.selectedTile.setImageView(null);
+		}
+		tile.setSelected(true);
+		this.selectedTile = tile;
+	}
+	
+	private TileType checkPoint(Point point)
+	{
+		for (Plane plane : this.planes)
+		{
+			if (point.equals(plane.getHead()))
+			{
+				return TileType.HIT_HEAD;
+			}
+			else if (plane.containsPoint(point))
+			{
+				return TileType.HIT_BODY;
+			}
+		}
+		return TileType.MISSED;
 	}
 
 }

@@ -88,6 +88,9 @@ public class PlanningBoardActivity extends Activity {
 			@Override
 			public void onClick(View v)
 			{
+				Board opponentBoard = new Board();
+				opponentBoard.randomizePlanes();
+				game.setOpponentBoard(opponentBoard);
 				String gameId = GameManager.getManager().addGame(game);
 				Intent intent = new Intent(PlanningBoardActivity.this, PlayingBoardActivity.class);
 				intent.putExtra(PlayingBoardActivity.GAME_ID, gameId);
