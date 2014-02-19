@@ -19,6 +19,9 @@ public class Tile {
 		NONE
 	}
 	
+	public static int HIT_HEAD_WIDTH, HIT_BODY_WIDTH, NO_HIT_WIDTH;
+	public static int HIT_HEAD_WIDTH_SMALL, HIT_BODY_WIDTH_SMALL, NO_HIT_WIDTH_SMALL;
+	
 	private ImageView imageView;
 
 	private boolean selected;
@@ -26,7 +29,7 @@ public class Tile {
 	private TileType type;
 
 	private Point position;
-
+	
 	public Tile(int x, int y) {
 		this.position = new Point(x, y);
 		this.setType(TileType.NONE);
@@ -53,16 +56,11 @@ public class Tile {
 		this.position = position;
 	}
 	
-	public Point getViewPosition(int gridSize)
+	public Point getViewPosition(int gridSize, boolean isSmall)
 	{
 		int unit = gridSize/10;
 		
-		int imageSize = 2;
-		
-		if (this.selected)
-		{
-			imageSize = unit;
-		}
+		int imageSize = getImageSize(gridSize, isSmall);
 		
 		int left = this.position.x * unit + unit/2 - imageSize/2;
 		int top = this.position.y * unit + unit/2 - imageSize/2;
@@ -121,9 +119,64 @@ public class Tile {
 		if (this.imageView != null)
 		{
 			ViewGroup parent = (ViewGroup) this.imageView.getParent();
-			parent.removeView(this.imageView);
+			if (parent != null)
+			{
+				parent.removeView(this.imageView);
+			}
 			
 		}
 		this.imageView = newImageView;
+	}
+	
+	private int getImageSize(int gridSize, boolean isSmall)
+	{
+		if (this.selected)
+		{
+			return gridSize/10;
+		}
+		else
+		{
+			switch (this.type)
+			{
+				case HIT_HEAD:
+				{
+					if (isSmall)
+					{
+						return HIT_HEAD_WIDTH_SMALL;
+					}
+					else
+					{
+						return HIT_HEAD_WIDTH;
+					}
+				}
+				case HIT_BODY:
+				{
+					if (isSmall)
+					{
+						return HIT_BODY_WIDTH_SMALL;
+					}
+					else
+					{
+						return HIT_BODY_WIDTH;
+					}
+				}
+				case MISSED:
+				{
+					if (isSmall)
+					{
+						return NO_HIT_WIDTH_SMALL;
+					}
+					else
+					{
+						return NO_HIT_WIDTH;
+					}
+				}
+				case NONE:
+				{
+					return 0;
+				}
+			}
+		}
+		return 0;
 	}
 }

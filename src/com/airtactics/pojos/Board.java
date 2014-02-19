@@ -105,6 +105,12 @@ public class Board {
 		int x = left / unit;
 		int y = top / unit;
 		
+		return clickPosition(context, x, y);
+		
+	}
+	
+	public Tile clickPosition(Context context, int x, int y)
+	{
 		Tile tile = this.tileMatrix[x][y];
 		if (tile.getType() == TileType.NONE)
 		{
@@ -126,7 +132,6 @@ public class Board {
 		{
 			return null;
 		}
-		
 	}
 	
 	private void clearSelectedTile()

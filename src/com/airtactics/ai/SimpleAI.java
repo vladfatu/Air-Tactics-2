@@ -1,0 +1,28 @@
+package com.airtactics.ai;
+
+import java.util.Random;
+
+import android.content.Context;
+
+import com.airtactics.pojos.Board;
+import com.airtactics.pojos.Tile;
+
+public class SimpleAI extends AI{
+
+	public SimpleAI(Board opponentBoard) {
+		super(opponentBoard);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public Tile shoot(Context context)
+	{
+		Random r = new Random();
+		int x = r.nextInt(10);
+		int y = r.nextInt(10);
+		
+		return getOpponentBoard().clickPosition(context, x, y);
+		
+	}
+
+}

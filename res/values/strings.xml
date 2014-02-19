@@ -16,5 +16,7 @@
     <string name="start">Start</string>
     <string name="randomize">Randomize</string>
     <string name="rotate">Rotate</string>
+    <string name="zero">0</string>
+    <string name="not_your_turn">It\'s not you turn, plase wait for your opponent to make his move.</string>
 
 </resources>

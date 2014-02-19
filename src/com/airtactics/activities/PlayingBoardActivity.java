@@ -12,6 +12,7 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.airtactics.engine.Point;
 import com.airtactics.managers.GameManager;
@@ -23,7 +24,7 @@ import com.google.android.gms.ads.AdView;
 
 /**
  * @author Vlad
- *
+ * 
  */
 public class PlayingBoardActivity extends Activity {
 
@@ -36,19 +37,19 @@ public class PlayingBoardActivity extends Activity {
 	private ImageView gridSmallImageView;
 	private ImageView gridLargeImageView;
 	private FrameLayout gridFrameLayout;
+	private ImageView hitHeadImageView, hitBodyImageView, noHitImageView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_playing_board);
-		
+
 		if (getIntent().getExtras() != null)
 		{
 			String gameId = getIntent().getExtras().getString(GAME_ID);
 			this.game = GameManager.getManager().getGame(gameId);
-		}
-		else
+		} else
 		{
 			finish();
 		}
@@ -61,6 +62,10 @@ public class PlayingBoardActivity extends Activity {
 		gridLargeImageView = (ImageView) findViewById(R.id.imageViewGrid);
 		gridFrameLayout = (FrameLayout) findViewById(R.id.frameLayoutGrid);
 
+		hitHeadImageView = (ImageView) findViewById(R.id.imageViewHitHead);
+		hitBodyImageView = (ImageView) findViewById(R.id.imageViewHitBody);
+		noHitImageView = (ImageView) findViewById(R.id.imageViewNoHit);
+
 		final RelativeLayout layout = (RelativeLayout) findViewById(R.id.relativeLayout);
 		ViewTreeObserver vto = layout.getViewTreeObserver();
 		vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
@@ -70,6 +75,9 @@ public class PlayingBoardActivity extends Activity {
 			public void onGlobalLayout()
 			{
 				setupGame();
+				Tile.HIT_HEAD_WIDTH = hitHeadImageView.getWidth();
+				Tile.HIT_BODY_WIDTH = hitBodyImageView.getWidth();
+				Tile.NO_HIT_WIDTH = noHitImageView.getWidth();
 				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
 				{
 					layout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
@@ -79,42 +87,30 @@ public class PlayingBoardActivity extends Activity {
 				}
 			}
 		});
-		
+
 	}
 
 	private void setupGame()
 	{
 		ImageView planeImageView1 = (ImageView) findViewById(R.id.imageViewPlaneSmall1);
-		PlaneView planeView1 = new PlaneView(this, 
-				game.getYourBoard().getPlanes().get(0),
-				planeImageView1,
-				this.gridSmallImageView.getWidth(),
-				R.drawable.plane_small,
-				R.drawable.redplane_small,
+		PlaneView planeView1 = new PlaneView(this, game.getYourBoard().getPlanes().get(0), planeImageView1,
+				this.gridSmallImageView.getWidth(), R.drawable.plane_small, R.drawable.redplane_small,
 				game.getYourBoard());
 		planeView1.updateImageView();
 
 		ImageView planeImageView2 = (ImageView) findViewById(R.id.imageViewPlaneSmall2);
-		PlaneView planeView2 = new PlaneView(this, 
-				game.getYourBoard().getPlanes().get(1),
-				planeImageView2,
-				this.gridSmallImageView.getWidth(),
-				R.drawable.plane_small,
-				R.drawable.redplane_small,
+		PlaneView planeView2 = new PlaneView(this, game.getYourBoard().getPlanes().get(1), planeImageView2,
+				this.gridSmallImageView.getWidth(), R.drawable.plane_small, R.drawable.redplane_small,
 				game.getYourBoard());
 		planeView2.updateImageView();
 
 		ImageView planeImageView3 = (ImageView) findViewById(R.id.imageViewPlaneSmall3);
-		PlaneView planeView3 = new PlaneView(this, 
-				game.getYourBoard().getPlanes().get(2),
-				planeImageView3,
-				this.gridSmallImageView.getWidth(),
-				R.drawable.plane_small,
-				R.drawable.redplane_small,
+		PlaneView planeView3 = new PlaneView(this, game.getYourBoard().getPlanes().get(2), planeImageView3,
+				this.gridSmallImageView.getWidth(), R.drawable.plane_small, R.drawable.redplane_small,
 				game.getYourBoard());
 		planeView3.updateImageView();
 	}
-	
+
 	public boolean onTouchEvent(MotionEvent event)
 	{
 		int action = event.getAction();
@@ -123,27 +119,37 @@ public class PlayingBoardActivity extends Activity {
 
 		Log.d(TAG, "Touch Event in Activity : X: " + currentX + "Y: " + currentY);
 
-		if (currentX > 0 && currentX < this.gridLargeImageView.getWidth()
-				&& currentY > 0 && currentY < this.gridLargeImageView.getHeight())
+		if (currentX > 0 && currentX < this.gridLargeImageView.getWidth() && currentY > 0
+				&& currentY < this.gridLargeImageView.getHeight())
 		{
+
 			switch (action & MotionEvent.ACTION_MASK)
 			{
 				case MotionEvent.ACTION_DOWN:
 				{
-					FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-
-					Tile tile = this.game.getOpponentBoard().clickBoard(this, currentX, currentY, this.gridLargeImageView.getWidth());
-					
-					if (tile != null)
+					if (this.game.isYourTurn())
 					{
-						Point viewPosition = tile.getViewPosition(this.gridLargeImageView.getWidth());
-						lp.setMargins(viewPosition.x, viewPosition.y, 0, 0);
-						
-						this.gridFrameLayout.addView(tile.getImageView(), lp);
+						FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+								FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+
+						Tile tile = this.game.clickOpponentBoard(this, currentX, currentY,
+								this.gridLargeImageView.getWidth());
+
+						if (tile != null)
+						{
+							Point viewPosition = tile.getViewPosition(this.gridLargeImageView.getWidth(), false);
+							lp.setMargins(viewPosition.x, viewPosition.y, 0, 0);
+
+							this.gridFrameLayout.addView(tile.getImageView(), lp);
+						}
+					} else
+					{
+						Toast.makeText(this, getString(R.string.not_your_turn), Toast.LENGTH_SHORT).show();
 					}
 					break;
 				}
 			}
+
 		}
 		return false;
 	}
