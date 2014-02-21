@@ -12,9 +12,11 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.airtactics.engine.Point;
+import com.airtactics.interfaces.GameListener;
 import com.airtactics.managers.GameManager;
 import com.airtactics.pojos.Game;
 import com.airtactics.pojos.PlaneView;
@@ -26,7 +28,7 @@ import com.google.android.gms.ads.AdView;
  * @author Vlad
  * 
  */
-public class PlayingBoardActivity extends Activity {
+public class PlayingBoardActivity extends Activity implements GameListener{
 
 	public final static String GAME_ID = "GAME_ID";
 
@@ -36,8 +38,10 @@ public class PlayingBoardActivity extends Activity {
 
 	private ImageView gridSmallImageView;
 	private ImageView gridLargeImageView;
+	private FrameLayout gridSmallFrameLayout;
 	private FrameLayout gridFrameLayout;
 	private ImageView hitHeadImageView, hitBodyImageView, noHitImageView;
+	private TextView yourScoreTextView, oppScoreTextView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -49,6 +53,7 @@ public class PlayingBoardActivity extends Activity {
 		{
 			String gameId = getIntent().getExtras().getString(GAME_ID);
 			this.game = GameManager.getManager().getGame(gameId);
+			this.game.addGameListener(this);
 		} else
 		{
 			finish();
@@ -61,10 +66,14 @@ public class PlayingBoardActivity extends Activity {
 		gridSmallImageView = (ImageView) findViewById(R.id.imageViewGridSmall);
 		gridLargeImageView = (ImageView) findViewById(R.id.imageViewGrid);
 		gridFrameLayout = (FrameLayout) findViewById(R.id.frameLayoutGrid);
+		gridSmallFrameLayout = (FrameLayout) findViewById(R.id.frameLayoutGridSmall);
 
 		hitHeadImageView = (ImageView) findViewById(R.id.imageViewHitHead);
 		hitBodyImageView = (ImageView) findViewById(R.id.imageViewHitBody);
 		noHitImageView = (ImageView) findViewById(R.id.imageViewNoHit);
+		
+		yourScoreTextView = (TextView) findViewById(R.id.textViewYourScore);
+		oppScoreTextView = (TextView) findViewById(R.id.textViewOppScore);
 
 		final RelativeLayout layout = (RelativeLayout) findViewById(R.id.relativeLayout);
 		ViewTreeObserver vto = layout.getViewTreeObserver();
@@ -109,6 +118,20 @@ public class PlayingBoardActivity extends Activity {
 				this.gridSmallImageView.getWidth(), R.drawable.plane_small, R.drawable.redplane_small,
 				game.getYourBoard());
 		planeView3.updateImageView();
+		
+		updateScore();
+	}
+	
+	private void updateScore()
+	{
+		if (yourScoreTextView != null)
+		{
+			yourScoreTextView.setText(game.getYourBoard().getNumberOfHitHeads() + "");
+		}
+		if (oppScoreTextView != null)
+		{
+			oppScoreTextView.setText(game.getOpponentBoard().getNumberOfHitHeads() + "");
+		}
 	}
 
 	public boolean onTouchEvent(MotionEvent event)
@@ -152,6 +175,33 @@ public class PlayingBoardActivity extends Activity {
 
 		}
 		return false;
+	}
+
+	@Override
+	protected void onDestroy()
+	{this.game.removeGameListeners(this);
+		super.onDestroy();
+	}
+	
+	@Override
+	public void onOpponentShot(Tile tile)
+	{
+		FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+				FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+		if (tile != null)
+		{
+			Point viewPosition = tile.getViewPosition(this.gridSmallImageView.getWidth(), false);
+			lp.setMargins(viewPosition.x, viewPosition.y, 0, 0);
+
+			this.gridSmallFrameLayout.addView(tile.getImageView(), lp);
+		}
+	}
+
+	@Override
+	public void onScoreUpated()
+	{
+		updateScore();
+		
 	}
 
 }

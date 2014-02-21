@@ -3,6 +3,7 @@ package com.airtactics.ai;
 import android.content.Context;
 
 import com.airtactics.pojos.Board;
+import com.airtactics.pojos.Game;
 import com.airtactics.pojos.Tile;
 
 public abstract class AI {
@@ -14,7 +15,7 @@ public abstract class AI {
 		this.opponentBoard = opponentBoard;
 	}
 	
-	public abstract Tile shoot(Context context);
+	public abstract Tile shoot(Context context, Game game);
 	
 	public Board getOpponentBoard()
 	{

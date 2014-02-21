@@ -98,26 +98,41 @@ public class Board {
 		}
 	}
 	
-	public Tile clickBoard(Context context, int left, int top, int gridSize)
+	public Tile clickBoard(Context context, Game game, int left, int top, int gridSize, boolean selectable)
 	{
 		int unit = gridSize/10;
 		
 		int x = left / unit;
 		int y = top / unit;
 		
-		return clickPosition(context, x, y);
+		return clickPosition(context, game, x, y, selectable);
 		
 	}
 	
-	public Tile clickPosition(Context context, int x, int y)
+	public boolean isPositionAlreayShot(int x, int y)
 	{
 		Tile tile = this.tileMatrix[x][y];
 		if (tile.getType() == TileType.NONE)
 		{
-			if (tile.isSelected())
+			return true;
+		}
+		else return false;
+	}
+	
+	public Tile clickPosition(Context context, Game game, int x, int y, boolean selectable)
+	{
+		Tile tile = this.tileMatrix[x][y];
+		if (tile.getType() == TileType.NONE)
+		{
+			if (!selectable || tile.isSelected())
 			{
 				clearSelectedTile();
-				tile.setType(checkPoint(new Point(x, y)));
+				TileType tileType = checkPoint(new Point(x, y));
+				tile.setType(tileType);
+				if (tileType == TileType.HIT_HEAD)
+				{
+					game.updateScore();
+				}
 			}
 			else
 			{
@@ -136,7 +151,10 @@ public class Board {
 	
 	private void clearSelectedTile()
 	{
-		this.selectedTile.setSelected(false);
+		if (selectedTile != null)
+		{
+			this.selectedTile.setSelected(false);
+		}
 		this.selectedTile = null;
 	}
 	
@@ -165,6 +183,19 @@ public class Board {
 			}
 		}
 		return TileType.MISSED;
+	}
+	
+	public int getNumberOfHitHeads()
+	{
+		int count = 0;
+		for (Plane plane : this.planes)
+		{
+			if (this.tileMatrix[plane.getHead().x][plane.getHead().y].getType() == TileType.HIT_HEAD)
+			{
+				count++;
+			}
+		}
+		return count;
 	}
 
 }

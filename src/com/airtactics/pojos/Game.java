@@ -1,9 +1,12 @@
 package com.airtactics.pojos;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 
 import com.airtactics.ai.AI;
 import com.airtactics.ai.SimpleAI;
+import com.airtactics.interfaces.GameListener;
 import com.airtactics.pojos.Tile.TileType;
 
 /**
@@ -26,10 +29,13 @@ public class Game {
 	
 	private GameType gameType;
 	
+	private ArrayList<GameListener> gameListeners;
+	
 	public Game()
 	{
 		this.gameType = GameType.SINGLE_PLAYER;
 		this.yourTurn = true;
+		this.gameListeners = new ArrayList<GameListener>();
 	}
 
 	public Board getYourBoard()
@@ -64,15 +70,27 @@ public class Game {
 	
 	public Tile clickOpponentBoard(Context context, int left, int top, int gridSize)
 	{
-		Tile tile = this.opponentBoard.clickBoard(context, left, top, gridSize);
+		Tile tile = this.opponentBoard.clickBoard(context, this, left, top, gridSize, true);
 		if (tile != null && tile.getType() != TileType.NONE)
 		{
 			setYourTurn(false);
 			AI ai = new SimpleAI(this.yourBoard);
-			ai.shoot(context);
+			Tile opponentsShotTile = ai.shoot(context, this);
+			for (GameListener gameListener : this.gameListeners)
+			{
+				gameListener.onOpponentShot(opponentsShotTile);
+			}
 			setYourTurn(true);
 		}
 		return tile;
+	}
+	
+	public void updateScore()
+	{
+		for (GameListener gameListener : this.gameListeners)
+		{
+			gameListener.onScoreUpated();
+		}
 	}
 
 	public boolean isYourTurn()
@@ -83,6 +101,16 @@ public class Game {
 	public void setYourTurn(boolean yourTurn)
 	{
 		this.yourTurn = yourTurn;
+	}
+
+	public void addGameListener(GameListener gameListener)
+	{
+		this.gameListeners.add(gameListener);
+	}
+
+	public void removeGameListeners(GameListener gameListener)
+	{
+		this.gameListeners.remove(gameListener);
 	}
 
 }
