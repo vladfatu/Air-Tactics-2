@@ -19,5 +19,6 @@
     <string name="zero">0</string>
     <string name="not_your_turn">It\'s not you turn, plase wait for your opponent to make his move.</string>
     <string name="invide_friends">Invite Friends</string>
+    <string name="check_matches">Check Matches</string>
 
 </resources>
