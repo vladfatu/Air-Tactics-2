@@ -1,24 +1,28 @@
 package com.airtactics.activities;
 
 import airtactics.com.R;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.games.Games;
+import com.google.example.games.basegameutils.BaseGameActivity;
 
 /**
  * @author Vlad
  *
  */
-public class GameMenuActivity extends Activity{
+public class GameMenuActivity extends BaseGameActivity{
 	
+	protected static final int RC_UNUSED = 0;
 	private Button buttonSinglePlayer;
 	private Button buttonOnline;
+	private Button buttonInviteFriends;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -51,10 +55,38 @@ public class GameMenuActivity extends Activity{
 			@Override
 			public void onClick(View v)
 			{
-				//TODO
+				startActivityForResult(Games.Achievements.getAchievementsIntent(getApiClient()),
+	                    RC_UNUSED);
 				
 			}
 		});
+		
+		this.buttonInviteFriends = (Button) findViewById(R.id.buttonInviteFriends);
+		this.buttonInviteFriends.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v)
+			{
+				Intent intent = Games.TurnBasedMultiplayer.getSelectOpponentsIntent(getApiClient(),
+		                1, 7, true);
+		        startActivityForResult(intent, RC_UNUSED);
+				
+			}
+		});
+	}
+
+	@Override
+	public void onSignInFailed()
+	{
+		Toast.makeText(this, "Signed in failed", Toast.LENGTH_SHORT).show();
+		
+	}
+
+	@Override
+	public void onSignInSucceeded()
+	{
+		Toast.makeText(this, "Signed in", Toast.LENGTH_SHORT).show();
+		
 	}
 	
 }

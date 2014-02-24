@@ -43,4 +43,13 @@
         ads:adUnitId="ca-app-pub-4668622539935763/6585462734" >
     </com.google.android.gms.ads.AdView>
 
+    <Button
+        android:id="@+id/buttonInviteFriends"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonOnline"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:text="@string/invide_friends" />
+
 </RelativeLayout>
