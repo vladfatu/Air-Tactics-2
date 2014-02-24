@@ -114,9 +114,9 @@ public class Board {
 		Tile tile = this.tileMatrix[x][y];
 		if (tile.getType() == TileType.NONE)
 		{
-			return true;
+			return false;
 		}
-		else return false;
+		else return true;
 	}
 	
 	public Tile clickPosition(Context context, Game game, int x, int y, boolean selectable)
