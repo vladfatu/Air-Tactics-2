@@ -1,6 +1,5 @@
 package com.airtactics.activities;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 import airtactics.com.R;
@@ -164,27 +163,80 @@ public class GameMenuActivity extends BaseGameActivity{
         }
     }
 	
-	public void startMatch(TurnBasedMatch match) {
-//        mTurnData = new SkeletonTurn();
+	public void startMatch(final TurnBasedMatch match) {
+//        SkeletonTurn mTurnData = new SkeletonTurn();
 //        // Some basic turn data
+//        mTurnData.turnCounter += 1;
 //        mTurnData.data = "First turn";
 //
 //        mMatch = match;
 
         String playerId = Games.Players.getCurrentPlayerId(getApiClient());
-        String myParticipantId = match.getParticipantId(playerId);
+        final String myParticipantId = match.getParticipantId(playerId);
 
 //        showSpinner();
 
         Games.TurnBasedMultiplayer.takeTurn(getApiClient(), match.getMatchId(),
-        		"test".getBytes(Charset.forName("UTF-16")), myParticipantId).setResultCallback(
+        		null, getNextParticipantId(match)).setResultCallback(
                 new ResultCallback<TurnBasedMultiplayer.UpdateMatchResult>() {
             @Override
             public void onResult(TurnBasedMultiplayer.UpdateMatchResult result) {
             	Toast.makeText(GameMenuActivity.this, "game result upated", Toast.LENGTH_SHORT).show();
-                //processResult(result);
+//            	startTurn(match);
             }
         });
+    }
+	
+	public void startTurn(TurnBasedMatch match) {
+
+        String nextParticipantId = getNextParticipantId(match);
+        // Create the next turn
+//        SkeletonTurn mTurnData = new SkeletonTurn();
+//        mTurnData.turnCounter += 1;
+//        mTurnData.data = "First turn";
+
+//        showSpinner();
+
+        Games.TurnBasedMultiplayer.takeTurn(getApiClient(), match.getMatchId(),
+                null, nextParticipantId).setResultCallback(
+                new ResultCallback<TurnBasedMultiplayer.UpdateMatchResult>() {
+            @Override
+            public void onResult(TurnBasedMultiplayer.UpdateMatchResult result) {
+            	Toast.makeText(GameMenuActivity.this, "first turn taken", Toast.LENGTH_SHORT).show();
+//                processResult(result);
+            }
+        });
+
+//        mTurnData = null;
+    }
+	
+	public String getNextParticipantId(TurnBasedMatch match) {
+
+        String playerId = Games.Players.getCurrentPlayerId(getApiClient());
+        String myParticipantId = match.getParticipantId(playerId);
+
+        ArrayList<String> participantIds = match.getParticipantIds();
+
+        int desiredIndex = -1;
+
+        for (int i = 0; i < participantIds.size(); i++) {
+            if (participantIds.get(i).equals(myParticipantId)) {
+                desiredIndex = i + 1;
+            }
+        }
+
+        if (desiredIndex < participantIds.size()) {
+            return participantIds.get(desiredIndex);
+        }
+
+        if (match.getAvailableAutoMatchSlots() <= 0) {
+            // You've run out of automatch slots, so we start over.
+            return participantIds.get(0);
+        } else {
+            // You have not yet fully automatched, so null will find a new
+            // person to play against.
+            return null;
+        }
     }
 	
 	@Override
