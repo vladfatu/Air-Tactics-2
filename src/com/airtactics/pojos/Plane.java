@@ -1,5 +1,6 @@
 package com.airtactics.pojos;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -10,8 +11,14 @@ import com.airtactics.engine.Point;
  * @author Vlad
  *
  */
-public class Plane {
+public class Plane implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5361965215542051550L;
+	
+	
 	private List<Point> points = new ArrayList<Point>();
 	private Point head;
 	private float degrees;

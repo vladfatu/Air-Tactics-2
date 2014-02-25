@@ -4,9 +4,10 @@ import java.util.Random;
 
 import android.content.Context;
 
+import com.airtactics.engine.Point;
 import com.airtactics.pojos.Board;
-import com.airtactics.pojos.Game;
 import com.airtactics.pojos.Tile;
+import com.airtactics.pojos.Tile.TileType;
 
 public class SimpleAI extends AI{
 
@@ -16,7 +17,7 @@ public class SimpleAI extends AI{
 	}
 
 	@Override
-	public Tile shoot(Context context, Game game)
+	public Tile shoot(Context context)
 	{
 		Random r = new Random();
 		int x = r.nextInt(10);
@@ -28,7 +29,9 @@ public class SimpleAI extends AI{
 			y = r.nextInt(10);
 		}
 		
-		return getOpponentBoard().clickPosition(context, game, x, y, false);
+		TileType tileType = getOpponentBoard().checkPoint(new Point(x, y));
+		Point tilePosition = new Point(x, y);
+		return new Tile(context, tilePosition, tileType);
 		
 	}
 

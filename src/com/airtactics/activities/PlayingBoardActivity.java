@@ -21,6 +21,7 @@ import com.airtactics.managers.GameManager;
 import com.airtactics.pojos.Game;
 import com.airtactics.pojos.PlaneView;
 import com.airtactics.pojos.Tile;
+import com.airtactics.pojos.Tile.TileType;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
@@ -42,6 +43,7 @@ public class PlayingBoardActivity extends Activity implements GameListener{
 	private FrameLayout gridFrameLayout;
 	private ImageView hitHeadImageView, hitBodyImageView, noHitImageView;
 	private TextView yourScoreTextView, oppScoreTextView;
+	private Tile selectedTile;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -133,7 +135,7 @@ public class PlayingBoardActivity extends Activity implements GameListener{
 			oppScoreTextView.setText(game.getOpponentBoard().getNumberOfHitHeads() + "");
 		}
 	}
-
+	
 	public boolean onTouchEvent(MotionEvent event)
 	{
 		int action = event.getAction();
@@ -154,16 +156,47 @@ public class PlayingBoardActivity extends Activity implements GameListener{
 					{
 						FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
 								FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-
-						Tile tile = this.game.clickOpponentBoard(this, currentX, currentY,
-								this.gridLargeImageView.getWidth());
-
-						if (tile != null)
+						
+						Point currentTilePosition = Tile.getPosition(currentX, currentY, this.gridLargeImageView.getWidth());
+						
+						if (this.selectedTile != null && this.selectedTile.getPosition().equals(currentTilePosition))
 						{
-							Point viewPosition = tile.getViewPosition(this.gridLargeImageView.getWidth(), false);
-							lp.setMargins(viewPosition.x, viewPosition.y, 0, 0);
-
-							this.gridFrameLayout.addView(tile.getImageView(), lp);
+							TileType tileType = this.game.clickOpponentBoard(this, currentTilePosition);
+							Tile tile = new Tile(this, currentTilePosition, tileType);
+	
+							if (tile != null)
+							{
+								Point viewPosition = tile.getViewPosition(this.gridLargeImageView.getWidth(), false);
+								lp.setMargins(viewPosition.x, viewPosition.y, 0, 0);
+	
+								this.gridFrameLayout.addView(tile.getImageView(), lp);
+								this.gridFrameLayout.removeView(this.selectedTile.getImageView());
+								this.selectedTile = null;
+							}
+						}
+						else
+						{
+							if (this.selectedTile == null)
+							{
+								this.selectedTile = new Tile(currentTilePosition);
+								this.selectedTile.setSelected(true);
+								ImageView imageView = new ImageView(this);
+								imageView.setImageResource(this.selectedTile.getResourceId());
+								this.selectedTile.setImageView(imageView);
+								
+								Point viewPosition = this.selectedTile.getViewPosition(this.gridLargeImageView.getWidth(), false);
+								lp.setMargins(viewPosition.x, viewPosition.y, 0, 0);
+								
+								this.gridFrameLayout.addView(this.selectedTile.getImageView(), lp);
+							}
+							else
+							{
+								this.selectedTile.setPosition(currentTilePosition);
+								Point viewPosition = this.selectedTile.getViewPosition(this.gridLargeImageView.getWidth(), false);
+								lp.setMargins(viewPosition.x, viewPosition.y, 0, 0);
+								
+								this.selectedTile.getImageView().setLayoutParams(lp);
+							}
 						}
 					} else
 					{

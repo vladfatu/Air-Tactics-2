@@ -6,6 +6,7 @@ import android.content.Context;
 
 import com.airtactics.ai.AI;
 import com.airtactics.ai.SimpleAI;
+import com.airtactics.engine.Point;
 import com.airtactics.interfaces.GameListener;
 import com.airtactics.pojos.Tile.TileType;
 
@@ -68,21 +69,29 @@ public class Game {
 		this.gameType = gameType;
 	}
 	
-	public Tile clickOpponentBoard(Context context, int left, int top, int gridSize)
+	public TileType clickOpponentBoard(Context context, Point position)
 	{
-		Tile tile = this.opponentBoard.clickBoard(context, this, left, top, gridSize, true);
-		if (tile != null && tile.getType() != TileType.NONE)
+		TileType tileType = this.opponentBoard.checkPoint(position);
+		if (tileType != TileType.NONE)
 		{
 			setYourTurn(false);
+			if (tileType == TileType.HIT_HEAD)
+			{
+				updateScore();
+			}
 			AI ai = new SimpleAI(this.yourBoard);
-			Tile opponentsShotTile = ai.shoot(context, this);
+			Tile opponentsShotTile = ai.shoot(context);
+			if (opponentsShotTile.getType() == TileType.HIT_HEAD)
+			{
+				updateScore();
+			}
 			for (GameListener gameListener : this.gameListeners)
 			{
 				gameListener.onOpponentShot(opponentsShotTile);
 			}
 			setYourTurn(true);
 		}
-		return tile;
+		return tileType;
 	}
 	
 	public void updateScore()

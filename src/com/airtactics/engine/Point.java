@@ -1,10 +1,17 @@
 package com.airtactics.engine;
 
+import java.io.Serializable;
+
 /**
  * @author Vlad
  *
  */
-public class Point {
+public class Point implements Serializable{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8667229354336545438L;
 	
 	public int x,y;
 

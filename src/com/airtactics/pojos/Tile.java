@@ -1,7 +1,7 @@
 package com.airtactics.pojos;
 
 import airtactics.com.R;
-import android.view.ViewGroup;
+import android.content.Context;
 import android.widget.ImageView;
 
 import com.airtactics.engine.Point;
@@ -30,10 +30,20 @@ public class Tile {
 
 	private Point position;
 	
-	public Tile(int x, int y) {
-		this.position = new Point(x, y);
+	public Tile(Point position) {
+		this.position = position;
 		this.setType(TileType.NONE);
 		this.selected = false;
+	}
+	
+	public Tile(Context context, Point position, TileType type)
+	{
+		this.position = position;
+		this.setType(type);
+		this.selected = false;
+		ImageView imageView = new ImageView(context);
+		imageView.setImageResource(getResourceId());
+		setImageView(imageView);
 	}
 
 	public boolean isSelected()
@@ -116,15 +126,6 @@ public class Tile {
 
 	public void setImageView(ImageView newImageView)
 	{
-		if (this.imageView != null)
-		{
-			ViewGroup parent = (ViewGroup) this.imageView.getParent();
-			if (parent != null)
-			{
-				parent.removeView(this.imageView);
-			}
-			
-		}
 		this.imageView = newImageView;
 	}
 	
@@ -178,5 +179,16 @@ public class Tile {
 			}
 		}
 		return 0;
+	}
+	
+	public static Point getPosition(int left, int top, int gridSize)
+	{
+		int unit = gridSize/10;
+		
+		int x = left / unit;
+		int y = top / unit;
+		
+		return new Point(x, y);
+		
 	}
 }

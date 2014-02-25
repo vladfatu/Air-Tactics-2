@@ -1,11 +1,10 @@
 package com.airtactics.pojos;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.Context;
 import android.util.Log;
-import android.widget.ImageView;
 
 import com.airtactics.engine.Point;
 import com.airtactics.pojos.Tile.TileType;
@@ -15,25 +14,29 @@ import com.airtactics.pojos.Tile.TileType;
  * @author Vlad
  *
  */
-public class Board {
+public class Board implements Serializable{
 	
-	private Tile[][] tileMatrix;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7313359807917057714L;
+	
+	private byte[][] boardMatrix;
 	private List<Plane> planes;
-	private Tile selectedTile;
-	
+
 	public Board()
 	{
-		this.tileMatrix = new Tile[10][];
+		this.boardMatrix = new byte[10][];
 		
 		for (int i=0;i<10;i++)
 		{
-			this.tileMatrix[i] = new Tile[10];
+			this.boardMatrix[i] = new byte[10];
 		}
 		
 		for (int i=0;i<10;i++)
     	{
     		for (int j=0;j<10;j++)
-    			this.tileMatrix[i][j] = new Tile(i,j);
+    			this.boardMatrix[i][j] = 0;
     	}
 		
 		this.planes = new ArrayList<Plane>();
@@ -98,79 +101,18 @@ public class Board {
 		}
 	}
 	
-	public Tile clickBoard(Context context, Game game, int left, int top, int gridSize, boolean selectable)
-	{
-		int unit = gridSize/10;
-		
-		int x = left / unit;
-		int y = top / unit;
-		
-		return clickPosition(context, game, x, y, selectable);
-		
-	}
-	
 	public boolean isPositionAlreayShot(int x, int y)
 	{
-		Tile tile = this.tileMatrix[x][y];
-		if (tile.getType() == TileType.NONE)
+		if (boardMatrix[x][y] == 1)
 		{
-			return false;
+			return true;
 		}
-		else return true;
+		else return false;
 	}
 	
-	public Tile clickPosition(Context context, Game game, int x, int y, boolean selectable)
+	public TileType checkPoint(Point point)
 	{
-		Tile tile = this.tileMatrix[x][y];
-		if (tile.getType() == TileType.NONE)
-		{
-			if (!selectable || tile.isSelected())
-			{
-				clearSelectedTile();
-				TileType tileType = checkPoint(new Point(x, y));
-				tile.setType(tileType);
-				if (tileType == TileType.HIT_HEAD)
-				{
-					game.updateScore();
-				}
-			}
-			else
-			{
-				selectTile(tile);
-			}
-			ImageView imageView = new ImageView(context);
-			imageView.setImageResource(tile.getResourceId());
-			tile.setImageView(imageView);
-			return tile;
-		}
-		else
-		{
-			return null;
-		}
-	}
-	
-	private void clearSelectedTile()
-	{
-		if (selectedTile != null)
-		{
-			this.selectedTile.setSelected(false);
-		}
-		this.selectedTile = null;
-	}
-	
-	private void selectTile(Tile tile)
-	{
-		if (this.selectedTile != null)
-		{
-			this.selectedTile.setSelected(false);
-			this.selectedTile.setImageView(null);
-		}
-		tile.setSelected(true);
-		this.selectedTile = tile;
-	}
-	
-	private TileType checkPoint(Point point)
-	{
+		this.boardMatrix[point.x][point.y] = 1;
 		for (Plane plane : this.planes)
 		{
 			if (point.equals(plane.getHead()))
@@ -190,7 +132,7 @@ public class Board {
 		int count = 0;
 		for (Plane plane : this.planes)
 		{
-			if (this.tileMatrix[plane.getHead().x][plane.getHead().y].getType() == TileType.HIT_HEAD)
+			if (this.boardMatrix[plane.getHead().x][plane.getHead().y] == 1)
 			{
 				count++;
 			}
