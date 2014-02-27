@@ -155,7 +155,14 @@ public class GameMenuActivity extends BaseGameActivity{
                 @Override
                 public void onResult(TurnBasedMultiplayer.InitiateMatchResult result) {
                     //processResult(result);
-                	startMatch(result.getMatch());
+                	Intent intent = new Intent(GameMenuActivity.this, PlanningBoardActivity.class);
+                	TurnBasedMatch match = result.getMatch();
+					intent.putExtra(GamesClient.EXTRA_TURN_BASED_MATCH, match);
+                	String playerId = Games.Players.getCurrentPlayerId(getApiClient());
+                	String myParticipantId = match.getParticipantId(playerId);
+                	intent.putExtra(PlanningBoardActivity.BUNDLE_YOUR_ID, myParticipantId);
+                	intent.putExtra(PlanningBoardActivity.BUNDLE_OPP_ID, getNextParticipantId(match));
+                	GameMenuActivity.this.startActivity(intent);
                 	Toast.makeText(GameMenuActivity.this, "game created ", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -163,29 +170,29 @@ public class GameMenuActivity extends BaseGameActivity{
         }
     }
 	
-	public void startMatch(final TurnBasedMatch match) {
-//        SkeletonTurn mTurnData = new SkeletonTurn();
-//        // Some basic turn data
-//        mTurnData.turnCounter += 1;
-//        mTurnData.data = "First turn";
+//	public void startMatch(final TurnBasedMatch match) {
+////        SkeletonTurn mTurnData = new SkeletonTurn();
+////        // Some basic turn data
+////        mTurnData.turnCounter += 1;
+////        mTurnData.data = "First turn";
+////
+////        mMatch = match;
 //
-//        mMatch = match;
-
-        String playerId = Games.Players.getCurrentPlayerId(getApiClient());
-        final String myParticipantId = match.getParticipantId(playerId);
-
-//        showSpinner();
-
-        Games.TurnBasedMultiplayer.takeTurn(getApiClient(), match.getMatchId(),
-        		null, getNextParticipantId(match)).setResultCallback(
-                new ResultCallback<TurnBasedMultiplayer.UpdateMatchResult>() {
-            @Override
-            public void onResult(TurnBasedMultiplayer.UpdateMatchResult result) {
-            	Toast.makeText(GameMenuActivity.this, "game result upated", Toast.LENGTH_SHORT).show();
-//            	startTurn(match);
-            }
-        });
-    }
+//        String playerId = Games.Players.getCurrentPlayerId(getApiClient());
+//        final String myParticipantId = match.getParticipantId(playerId);
+//
+////        showSpinner();
+//
+//        Games.TurnBasedMultiplayer.takeTurn(getApiClient(), match.getMatchId(),
+//        		null, getNextParticipantId(match)).setResultCallback(
+//                new ResultCallback<TurnBasedMultiplayer.UpdateMatchResult>() {
+//            @Override
+//            public void onResult(TurnBasedMultiplayer.UpdateMatchResult result) {
+//            	Toast.makeText(GameMenuActivity.this, "game result upated", Toast.LENGTH_SHORT).show();
+////            	startTurn(match);
+//            }
+//        });
+//    }
 	
 	public void startTurn(TurnBasedMatch match) {
 

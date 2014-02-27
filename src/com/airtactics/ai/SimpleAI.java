@@ -6,8 +6,8 @@ import android.content.Context;
 
 import com.airtactics.engine.Point;
 import com.airtactics.pojos.Board;
-import com.airtactics.pojos.Tile;
-import com.airtactics.pojos.Tile.TileType;
+import com.airtactics.views.Tile;
+import com.airtactics.views.Tile.TileType;
 
 public class SimpleAI extends AI{
 

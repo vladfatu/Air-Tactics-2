@@ -7,7 +7,7 @@ import java.util.List;
 import android.util.Log;
 
 import com.airtactics.engine.Point;
-import com.airtactics.pojos.Tile.TileType;
+import com.airtactics.views.Tile.TileType;
 
 
 /**
@@ -16,9 +16,6 @@ import com.airtactics.pojos.Tile.TileType;
  */
 public class Board implements Serializable{
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -7313359807917057714L;
 	
 	private byte[][] boardMatrix;

@@ -3,7 +3,7 @@ package com.airtactics.ai;
 import android.content.Context;
 
 import com.airtactics.pojos.Board;
-import com.airtactics.pojos.Tile;
+import com.airtactics.views.Tile;
 
 public abstract class AI {
 	

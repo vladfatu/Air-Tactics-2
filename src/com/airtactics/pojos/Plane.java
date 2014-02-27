@@ -13,9 +13,6 @@ import com.airtactics.engine.Point;
  */
 public class Plane implements Serializable{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -5361965215542051550L;
 	
 	

@@ -1,6 +1,6 @@
 package com.airtactics.interfaces;
 
-import com.airtactics.pojos.Tile;
+import com.airtactics.views.Tile;
 
 public interface GameListener {
 	

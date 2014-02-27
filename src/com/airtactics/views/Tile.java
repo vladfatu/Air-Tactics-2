@@ -1,4 +1,4 @@
-package com.airtactics.pojos;
+package com.airtactics.views;
 
 import airtactics.com.R;
 import android.content.Context;

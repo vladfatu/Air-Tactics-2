@@ -19,9 +19,9 @@ import com.airtactics.engine.Point;
 import com.airtactics.interfaces.GameListener;
 import com.airtactics.managers.GameManager;
 import com.airtactics.pojos.Game;
-import com.airtactics.pojos.PlaneView;
-import com.airtactics.pojos.Tile;
-import com.airtactics.pojos.Tile.TileType;
+import com.airtactics.views.PlaneView;
+import com.airtactics.views.Tile;
+import com.airtactics.views.Tile.TileType;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 

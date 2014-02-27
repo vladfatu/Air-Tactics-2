@@ -1,9 +1,11 @@
-package com.airtactics.pojos;
+package com.airtactics.views;
 
 import android.content.Context;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageView;
 
+import com.airtactics.pojos.Board;
+import com.airtactics.pojos.Plane;
 import com.airtactics.utils.ViewUtils;
 
 /**

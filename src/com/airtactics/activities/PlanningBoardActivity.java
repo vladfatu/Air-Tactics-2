@@ -2,36 +2,46 @@ package com.airtactics.activities;
 
 import airtactics.com.R;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
+import com.airtactics.constants.Constants;
 import com.airtactics.managers.GameManager;
-import com.airtactics.pojos.Board;
 import com.airtactics.pojos.Game;
-import com.airtactics.pojos.PlaneView;
+import com.airtactics.pojos.Game.GameType;
+import com.airtactics.views.PlaneView;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.GamesClient;
+import com.google.android.gms.games.multiplayer.turnbased.TurnBasedMatch;
+import com.google.android.gms.games.multiplayer.turnbased.TurnBasedMultiplayer;
+import com.google.example.games.basegameutils.BaseGameActivity;
 
 /**
  * @author Vlad
  *
  */
-public class PlanningBoardActivity extends Activity {
+public class PlanningBoardActivity extends BaseGameActivity {
 
 	private static final String TAG = "PlanningBoardActivity";
+	public static final String BUNDLE_OPP_ID = "BUNDLE_OPP_ID";
+	public static final String BUNDLE_YOUR_ID = "BUNDLE_YOUR_ID";
+	
 	private Button rotateButton;
 	private Button randomizeButton;
 	private Button startButton;
@@ -42,6 +52,7 @@ public class PlanningBoardActivity extends Activity {
 	private PlaneView planeView2;
 	private PlaneView planeView3;
 	private Game game;
+	private String opponentUsername, yourUsername;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -88,16 +99,25 @@ public class PlanningBoardActivity extends Activity {
 			@Override
 			public void onClick(View v)
 			{
-				Board opponentBoard = new Board();
-				opponentBoard.randomizePlanes();
-				game.setOpponentBoard(opponentBoard);
+				game.getOpponentBoard().randomizePlanes();
 				String gameId = GameManager.getManager().addGame(game);
 				Intent intent = new Intent(PlanningBoardActivity.this, PlayingBoardActivity.class);
 				intent.putExtra(PlayingBoardActivity.GAME_ID, gameId);
+				if (game.getGameType() == GameType.MULTI_PLAYER)
+				{
+					startMatch();
+				}
 				startActivity(intent);
 				finish();
 			}
 		});
+		
+		Bundle extras = getIntent().getExtras();
+		if (extras != null)
+		{
+			this.opponentUsername = extras.getString(BUNDLE_OPP_ID);
+			this.yourUsername = extras.getString(BUNDLE_YOUR_ID);
+		}
 		
 		final RelativeLayout layout = (RelativeLayout) findViewById(R.id.relativeLayout);
 		ViewTreeObserver vto = layout.getViewTreeObserver();
@@ -121,9 +141,14 @@ public class PlanningBoardActivity extends Activity {
 	
 	private void setupGame()
 	{
-		game = new Game();
-		game.setYourBoard(new Board());
-
+		if (this.yourUsername!= null && this.opponentUsername != null)
+		{
+			game = new Game(GameType.MULTI_PLAYER, this.yourUsername, this.opponentUsername);
+		}
+		else
+		{
+			game = new Game(GameType.SINGLE_PLAYER, Constants.DEFAULT_SINGLE_PLAYER_USERNAME, Constants.DEFAULT_AI_USERNAME);
+		}
 		final ImageView planeImageView1 = (ImageView) findViewById(R.id.imageViewPlane1);
 		planeView1 = new PlaneView(this, 
 				game.getYourBoard().getPlanes().get(0),
@@ -241,6 +266,35 @@ public class PlanningBoardActivity extends Activity {
 		planeView1.updateImageView();
 		planeView2.updateImageView();
 		planeView3.updateImageView();
+	}
+	
+	public void startMatch()
+	{
+
+		TurnBasedMatch match = getIntent().getParcelableExtra(GamesClient.EXTRA_TURN_BASED_MATCH);
+		Games.TurnBasedMultiplayer.takeTurn(getApiClient(), match.getMatchId(), this.game.persist(), this.opponentUsername).setResultCallback(
+				new ResultCallback<TurnBasedMultiplayer.UpdateMatchResult>() {
+					@Override
+					public void onResult(TurnBasedMultiplayer.UpdateMatchResult result)
+					{
+						Toast.makeText(PlanningBoardActivity.this, "game result upated", Toast.LENGTH_SHORT).show();
+						// startTurn(match);
+					}
+				});
+	}
+
+	@Override
+	public void onSignInFailed()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onSignInSucceeded()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 }
