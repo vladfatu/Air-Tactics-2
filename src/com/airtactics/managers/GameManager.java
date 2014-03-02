@@ -4,13 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.airtactics.pojos.Game;
-import com.airtactics.pojos.Game.GameType;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.multiplayer.turnbased.OnTurnBasedMatchUpdateReceivedListener;
+import com.google.android.gms.games.multiplayer.turnbased.TurnBasedMatch;
 
 /**
  * @author Vlad
  *
  */
-public class GameManager {
+public class GameManager implements OnTurnBasedMatchUpdateReceivedListener{
 	
 	private Map<String, Game> currentGames;
 	
@@ -31,13 +34,8 @@ public class GameManager {
 		return currentGames.get(gameId);
 	}
 	
-	public String addGame(Game game)
+	public String addGame(String gameId, Game game)
 	{
-		String gameId = "SINGLE_PLAYER";
-		if (game.getGameType() == GameType.MULTI_PLAYER)
-		{
-			//TODO
-		}
 		currentGames.put(gameId, game);
 		return gameId;
 	}
@@ -45,6 +43,29 @@ public class GameManager {
 	public Map<String, Game> getCurrentGames()
 	{
 		return currentGames;
+	}
+	
+	public void registerAsListener(GoogleApiClient apiClient)
+	{
+		Games.TurnBasedMultiplayer.registerMatchUpdateListener(apiClient, this);
+	}
+
+	@Override
+	public void onTurnBasedMatchReceived(TurnBasedMatch match)
+	{
+		Game game = this.currentGames.get(match.getMatchId());
+		if (game != null)
+		{
+			game.update(match);
+		}
+		
+	}
+
+	@Override
+	public void onTurnBasedMatchRemoved(String arg0)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 }

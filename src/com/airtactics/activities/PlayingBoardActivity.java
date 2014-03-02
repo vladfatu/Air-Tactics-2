@@ -2,7 +2,6 @@ package com.airtactics.activities;
 
 import airtactics.com.R;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,12 +23,14 @@ import com.airtactics.views.Tile;
 import com.airtactics.views.Tile.TileType;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.games.Games;
+import com.google.example.games.basegameutils.BaseGameActivity;
 
 /**
  * @author Vlad
  * 
  */
-public class PlayingBoardActivity extends Activity implements GameListener{
+public class PlayingBoardActivity extends BaseGameActivity implements GameListener{
 
 	public final static String GAME_ID = "GAME_ID";
 
@@ -130,7 +131,7 @@ public class PlayingBoardActivity extends Activity implements GameListener{
 		{
 			yourScoreTextView.setText(game.getYourBoard().getNumberOfHitHeads() + "");
 		}
-		if (oppScoreTextView != null)
+		if (oppScoreTextView != null && game.getOpponentBoard() != null)
 		{
 			oppScoreTextView.setText(game.getOpponentBoard().getNumberOfHitHeads() + "");
 		}
@@ -212,7 +213,8 @@ public class PlayingBoardActivity extends Activity implements GameListener{
 
 	@Override
 	protected void onDestroy()
-	{this.game.removeGameListeners(this);
+	{
+		this.game.removeGameListeners(this);
 		super.onDestroy();
 	}
 	
@@ -234,6 +236,20 @@ public class PlayingBoardActivity extends Activity implements GameListener{
 	public void onScoreUpated()
 	{
 		updateScore();
+		
+	}
+
+	@Override
+	public void onSignInFailed()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onSignInSucceeded()
+	{
+		// TODO Auto-generated method stub
 		
 	}
 

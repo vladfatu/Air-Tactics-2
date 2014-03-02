@@ -16,7 +16,6 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.airtactics.constants.Constants;
 import com.airtactics.managers.GameManager;
@@ -39,8 +38,6 @@ import com.google.example.games.basegameutils.BaseGameActivity;
 public class PlanningBoardActivity extends BaseGameActivity {
 
 	private static final String TAG = "PlanningBoardActivity";
-	public static final String BUNDLE_OPP_ID = "BUNDLE_OPP_ID";
-	public static final String BUNDLE_YOUR_ID = "BUNDLE_YOUR_ID";
 	
 	private Button rotateButton;
 	private Button randomizeButton;
@@ -52,7 +49,7 @@ public class PlanningBoardActivity extends BaseGameActivity {
 	private PlaneView planeView2;
 	private PlaneView planeView3;
 	private Game game;
-	private String opponentUsername, yourUsername;
+	private String gameId;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -99,24 +96,26 @@ public class PlanningBoardActivity extends BaseGameActivity {
 			@Override
 			public void onClick(View v)
 			{
-				game.getOpponentBoard().randomizePlanes();
-				String gameId = GameManager.getManager().addGame(game);
-				Intent intent = new Intent(PlanningBoardActivity.this, PlayingBoardActivity.class);
-				intent.putExtra(PlayingBoardActivity.GAME_ID, gameId);
 				if (game.getGameType() == GameType.MULTI_PLAYER)
 				{
 					startMatch();
 				}
-				startActivity(intent);
-				finish();
+				else
+				{
+					game.getOpponentBoard().randomizePlanes();
+					String gameId = GameManager.getManager().addGame(Constants.DEFAULT_ID_SINGLE_PLAYER, game);
+					Intent intent = new Intent(PlanningBoardActivity.this, PlayingBoardActivity.class);
+					intent.putExtra(PlayingBoardActivity.GAME_ID, gameId);
+					startActivity(intent);
+					finish();
+				}
 			}
 		});
 		
 		Bundle extras = getIntent().getExtras();
 		if (extras != null)
 		{
-			this.opponentUsername = extras.getString(BUNDLE_OPP_ID);
-			this.yourUsername = extras.getString(BUNDLE_YOUR_ID);
+			this.gameId = extras.getString(PlayingBoardActivity.GAME_ID);
 		}
 		
 		final RelativeLayout layout = (RelativeLayout) findViewById(R.id.relativeLayout);
@@ -141,13 +140,9 @@ public class PlanningBoardActivity extends BaseGameActivity {
 	
 	private void setupGame()
 	{
-		if (this.yourUsername!= null && this.opponentUsername != null)
+		if (this.gameId != null)
 		{
-			game = new Game(GameType.MULTI_PLAYER, this.yourUsername, this.opponentUsername);
-		}
-		else
-		{
-			game = new Game(GameType.SINGLE_PLAYER, Constants.DEFAULT_SINGLE_PLAYER_USERNAME, Constants.DEFAULT_AI_USERNAME);
+			game = GameManager.getManager().getGame(this.gameId);
 		}
 		final ImageView planeImageView1 = (ImageView) findViewById(R.id.imageViewPlane1);
 		planeView1 = new PlaneView(this, 
@@ -272,13 +267,19 @@ public class PlanningBoardActivity extends BaseGameActivity {
 	{
 
 		TurnBasedMatch match = getIntent().getParcelableExtra(GamesClient.EXTRA_TURN_BASED_MATCH);
-		Games.TurnBasedMultiplayer.takeTurn(getApiClient(), match.getMatchId(), this.game.persist(), this.opponentUsername).setResultCallback(
+		Games.TurnBasedMultiplayer.takeTurn(getApiClient(), match.getMatchId(), this.game.persist(), game.getOpponentUsername()).setResultCallback(
 				new ResultCallback<TurnBasedMultiplayer.UpdateMatchResult>() {
 					@Override
 					public void onResult(TurnBasedMultiplayer.UpdateMatchResult result)
 					{
-						Toast.makeText(PlanningBoardActivity.this, "game result upated", Toast.LENGTH_SHORT).show();
-						// startTurn(match);
+						if (gameId == null)
+						{
+							gameId = GameManager.getManager().addGame(result.getMatch().getMatchId(), game);
+						}
+						Intent intent = new Intent(PlanningBoardActivity.this, PlayingBoardActivity.class);
+						intent.putExtra(PlayingBoardActivity.GAME_ID, gameId);
+						startActivity(intent);
+						finish();
 					}
 				});
 	}

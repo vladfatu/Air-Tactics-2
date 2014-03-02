@@ -18,14 +18,15 @@ import com.airtactics.engine.Point;
 import com.airtactics.interfaces.GameListener;
 import com.airtactics.views.Tile;
 import com.airtactics.views.Tile.TileType;
+import com.google.android.gms.games.multiplayer.turnbased.TurnBasedMatch;
 
 /**
  * @author Vlad
  * 
  */
-public class Game {
+public class Game{
 
-	public enum GameType {
+	public enum GameType{
 		SINGLE_PLAYER, MULTI_PLAYER
 	}
 
@@ -48,9 +49,17 @@ public class Game {
 		this.playerToMove = yourUsername;
 		this.gameListeners = new ArrayList<GameListener>();
 		this.lastGameState = new GameState();
-		this.lastGameState.addBoard(yourUsername, new Board());
-		this.lastGameState.addBoard(opponentUsername, new Board());
 		
+	}
+	
+	public void initializeYourBoard()
+	{
+		this.lastGameState.addBoard(yourUsername, new Board());
+	}
+	
+	public void initializeOpponentBoard()
+	{
+		this.lastGameState.addBoard(opponentUsername, new Board());
 	}
 
 	public Board getYourBoard()
@@ -125,6 +134,21 @@ public class Game {
 	{
 		this.gameListeners.remove(gameListener);
 	}
+	
+	public void update(TurnBasedMatch match)
+	{
+		this.lastGameState = unpersist(match.getData());
+	}
+	
+	public String getOpponentUsername()
+	{
+		return opponentUsername;
+	}
+	
+	public void setLastGameState(GameState lastGameState)
+	{
+		this.lastGameState = lastGameState;
+	}
 
 	public byte[] persist()
 	{
@@ -163,7 +187,7 @@ public class Game {
 		return null;
 	}
 
-	public GameState unpersist(byte[] byteArray)
+	public static GameState unpersist(byte[] byteArray)
 	{
 		GameState gameState = null;
 		ByteArrayInputStream bis = new ByteArrayInputStream(byteArray);

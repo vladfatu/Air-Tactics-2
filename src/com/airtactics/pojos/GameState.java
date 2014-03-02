@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.airtactics.constants.Constants;
+
 /**
  * @author Vlad
  *
@@ -38,6 +40,11 @@ public class GameState implements Serializable{
 	public void setLastMove(Move lastMove)
 	{
 		this.lastMove = lastMove;
+	}
+
+	public boolean isStarted()
+	{
+		return this.boards.size() == Constants.NUMBER_OF_PLAYERS;
 	}
 
 }
