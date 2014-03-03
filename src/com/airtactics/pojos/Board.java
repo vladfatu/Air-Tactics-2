@@ -107,21 +107,32 @@ public class Board implements Serializable{
 		else return false;
 	}
 	
-	public TileType checkPoint(Point point)
+	public void markAsSeen(Point point)
 	{
 		this.boardMatrix[point.x][point.y] = 1;
-		for (Plane plane : this.planes)
+	}
+	
+	public TileType checkPoint(Point point)
+	{
+		if (this.boardMatrix[point.x][point.y] == 1)
 		{
-			if (point.equals(plane.getHead()))
+			for (Plane plane : this.planes)
 			{
-				return TileType.HIT_HEAD;
+				if (point.equals(plane.getHead()))
+				{
+					return TileType.HIT_HEAD;
+				}
+				else if (plane.containsPoint(point))
+				{
+					return TileType.HIT_BODY;
+				}
 			}
-			else if (plane.containsPoint(point))
-			{
-				return TileType.HIT_BODY;
-			}
+			return TileType.MISSED;
 		}
-		return TileType.MISSED;
+		else
+		{
+			return TileType.NONE;
+		}
 	}
 	
 	public int getNumberOfHitHeads()

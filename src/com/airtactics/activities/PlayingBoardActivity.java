@@ -23,7 +23,6 @@ import com.airtactics.views.Tile;
 import com.airtactics.views.Tile.TileType;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.games.Games;
 import com.google.example.games.basegameutils.BaseGameActivity;
 
 /**
@@ -219,10 +218,11 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 	}
 	
 	@Override
-	public void onOpponentShot(Tile tile)
+	public void onOpponentShot(Point point)
 	{
 		FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
 				FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+		Tile tile = new Tile(this, point, this.game.getYourBoard().checkPoint(point));
 		if (tile != null)
 		{
 			Point viewPosition = tile.getViewPosition(this.gridSmallImageView.getWidth(), false);
@@ -238,6 +238,13 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 		updateScore();
 		
 	}
+	
+	@Override
+	public void onGameStarted()
+	{
+		Toast.makeText(this, "Game has started", Toast.LENGTH_SHORT).show();
+		
+	}
 
 	@Override
 	public void onSignInFailed()
@@ -249,7 +256,7 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 	@Override
 	public void onSignInSucceeded()
 	{
-		// TODO Auto-generated method stub
+		GameManager.getManager().registerAsListener(getApiClient());
 		
 	}
 

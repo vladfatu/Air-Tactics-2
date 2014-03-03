@@ -6,8 +6,6 @@ import android.content.Context;
 
 import com.airtactics.engine.Point;
 import com.airtactics.pojos.Board;
-import com.airtactics.views.Tile;
-import com.airtactics.views.Tile.TileType;
 
 public class SimpleAI extends AI{
 
@@ -17,7 +15,7 @@ public class SimpleAI extends AI{
 	}
 
 	@Override
-	public Tile shoot(Context context)
+	public Point shoot(Context context)
 	{
 		Random r = new Random();
 		int x = r.nextInt(10);
@@ -29,9 +27,7 @@ public class SimpleAI extends AI{
 			y = r.nextInt(10);
 		}
 		
-		TileType tileType = getOpponentBoard().checkPoint(new Point(x, y));
-		Point tilePosition = new Point(x, y);
-		return new Tile(context, tilePosition, tileType);
+		return new Point(x, y);
 		
 	}
 

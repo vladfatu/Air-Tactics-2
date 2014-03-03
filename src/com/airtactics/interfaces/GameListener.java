@@ -1,10 +1,12 @@
 package com.airtactics.interfaces;
 
-import com.airtactics.views.Tile;
+import com.airtactics.engine.Point;
 
 public interface GameListener {
 	
-	public void onOpponentShot(Tile tile);
+	public void onGameStarted();
+	
+	public void onOpponentShot(Point point);
 	
 	public void onScoreUpated();
 

@@ -62,9 +62,13 @@ public class GameManager implements OnTurnBasedMatchUpdateReceivedListener{
 	}
 
 	@Override
-	public void onTurnBasedMatchRemoved(String arg0)
+	public void onTurnBasedMatchRemoved(String matchId)
 	{
-		// TODO Auto-generated method stub
+		Game game = this.currentGames.get(matchId);
+		if (game != null)
+		{
+			
+		}
 		
 	}
 

@@ -16,7 +16,6 @@ import com.airtactics.ai.AI;
 import com.airtactics.ai.SimpleAI;
 import com.airtactics.engine.Point;
 import com.airtactics.interfaces.GameListener;
-import com.airtactics.views.Tile;
 import com.airtactics.views.Tile.TileType;
 import com.google.android.gms.games.multiplayer.turnbased.TurnBasedMatch;
 
@@ -84,6 +83,7 @@ public class Game{
 
 	public TileType clickOpponentBoard(Context context, Point position)
 	{
+		getOpponentBoard().markAsSeen(position);
 		TileType tileType = getOpponentBoard().checkPoint(position);
 		if (tileType != TileType.NONE)
 		{
@@ -93,18 +93,25 @@ public class Game{
 				updateScore();
 			}
 			AI ai = new SimpleAI(getYourBoard());
-			Tile opponentsShotTile = ai.shoot(context);
-			if (opponentsShotTile.getType() == TileType.HIT_HEAD)
-			{
-				updateScore();
-			}
-			for (GameListener gameListener : this.gameListeners)
-			{
-				gameListener.onOpponentShot(opponentsShotTile);
-			}
-			setPlayerToMove(yourUsername);
+			Point opponentsShotPosition = ai.shoot(context);
+			getYourBoard().markAsSeen(opponentsShotPosition);
+			opponentShot(opponentsShotPosition);
 		}
 		return tileType;
+	}
+	
+	public void opponentShot(Point point)
+	{
+		TileType tileType = getYourBoard().checkPoint(point);
+		if (tileType == TileType.HIT_HEAD)
+		{
+			updateScore();
+		}
+		for (GameListener gameListener : this.gameListeners)
+		{
+			gameListener.onOpponentShot(point);
+		}
+		setPlayerToMove(yourUsername);
 	}
 
 	public void updateScore()
@@ -112,6 +119,14 @@ public class Game{
 		for (GameListener gameListener : this.gameListeners)
 		{
 			gameListener.onScoreUpated();
+		}
+	}
+	
+	public void updateGameStarted()
+	{
+		for (GameListener gameListener : this.gameListeners)
+		{
+			gameListener.onGameStarted();
 		}
 	}
 
@@ -137,7 +152,17 @@ public class Game{
 	
 	public void update(TurnBasedMatch match)
 	{
-		this.lastGameState = unpersist(match.getData());
+		GameState newGameState = unpersist(match.getData());
+		boolean wasGameStarted = this.lastGameState.isStarted();
+		this.lastGameState = newGameState;
+		if (!wasGameStarted && newGameState.isStarted())
+		{
+			updateGameStarted();
+		}
+		else if (newGameState.getLastMove() != null)
+		{
+			opponentShot(newGameState.getLastMove().getPoint());
+		}
 	}
 	
 	public String getOpponentUsername()
