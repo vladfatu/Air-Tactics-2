@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import android.content.Context;
 
 import com.airtactics.ai.AI;
-import com.airtactics.ai.SimpleAI;
+import com.airtactics.ai.SmartAI;
 import com.airtactics.engine.Point;
 import com.airtactics.interfaces.GameListener;
 import com.airtactics.views.Tile.TileType;
@@ -38,6 +38,8 @@ public class Game{
 	private GameType gameType;
 
 	private GameState lastGameState;
+	
+	private AI ai;
 
 	private ArrayList<GameListener> gameListeners;
 
@@ -53,7 +55,12 @@ public class Game{
 	
 	public void initializeYourBoard()
 	{
-		this.lastGameState.addBoard(yourUsername, new Board());
+		Board board = new Board();
+//		if (this.gameType == GameType.SINGLE_PLAYER)
+//		{
+			this.ai = new SmartAI(board);
+//		}
+		this.lastGameState.addBoard(yourUsername, board);
 	}
 	
 	public void initializeOpponentBoard()
@@ -92,9 +99,7 @@ public class Game{
 			{
 				updateScore();
 			}
-			AI ai = new SimpleAI(getYourBoard());
-			Point opponentsShotPosition = ai.shoot(context);
-			getYourBoard().markAsSeen(opponentsShotPosition);
+			Point opponentsShotPosition = this.ai.shoot(context);
 			opponentShot(opponentsShotPosition);
 		}
 		return tileType;

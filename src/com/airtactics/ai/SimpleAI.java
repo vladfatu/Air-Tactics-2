@@ -21,7 +21,7 @@ public class SimpleAI extends AI{
 		int x = r.nextInt(10);
 		int y = r.nextInt(10);
 		
-		while (getOpponentBoard().isPositionAlreayShot(x, y))
+		while (getOpponentBoard().isPositionAlreayShot(new Point(x, y)))
 		{
 			x = r.nextInt(10);
 			y = r.nextInt(10);

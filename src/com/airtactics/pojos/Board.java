@@ -98,9 +98,9 @@ public class Board implements Serializable{
 		}
 	}
 	
-	public boolean isPositionAlreayShot(int x, int y)
+	public boolean isPositionAlreayShot(Point point)
 	{
-		if (boardMatrix[x][y] == 1)
+		if (boardMatrix[point.x][point.y] == 1)
 		{
 			return true;
 		}
