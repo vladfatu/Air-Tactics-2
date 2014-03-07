@@ -95,7 +95,7 @@ public class MatrixProbabilitiesGenerator {
 	 * 				(for instance a plane has a body part in a tile that was already revealed 
 	 * 				to have a Head type or a missed type, then it is not a valid plane)
 	 * 
-	 * - if the planes are also Body Hit, then we increment this tile twice (TODO this should be parameterized)
+	 * - if the planes are also Body Hit, then we increment this tile with the number of hits (TODO this should be parameterized)
 	 */
 	public static void generateProbabilityMatrix(int[][] probabilityMatrix, TileType[][] tileMatrix)
 	{
@@ -110,34 +110,22 @@ public class MatrixProbabilitiesGenerator {
 					if (isPlaneValid(head, 0, tileMatrix))
 					{
 						probabilityMatrix[i][j]++;
-						if (isPlaneBodyHit(head, 0, tileMatrix))
-						{
-							probabilityMatrix[i][j]++;
-						}
+						probabilityMatrix[i][j] += getPlaneBodyHits(head, 0, tileMatrix);
 					}
 					if (isPlaneValid(head, 90, tileMatrix))
 					{
 						probabilityMatrix[i][j]++;
-						if (isPlaneBodyHit(head, 90, tileMatrix))
-						{
-							probabilityMatrix[i][j]++;
-						}
+						probabilityMatrix[i][j] += getPlaneBodyHits(head, 90, tileMatrix);
 					}
 					if (isPlaneValid(head, 180, tileMatrix))
 					{
 						probabilityMatrix[i][j]++;
-						if (isPlaneBodyHit(head, 180, tileMatrix))
-						{
-							probabilityMatrix[i][j]++;
-						}
+						probabilityMatrix[i][j] += getPlaneBodyHits(head, 180, tileMatrix);
 					}
 					if (isPlaneValid(head, 270, tileMatrix))
 					{
 						probabilityMatrix[i][j]++;
-						if (isPlaneBodyHit(head, 270, tileMatrix))
-						{
-							probabilityMatrix[i][j]++;
-						}
+						probabilityMatrix[i][j] += getPlaneBodyHits(head, 270, tileMatrix);
 					}
 				}
 
@@ -156,10 +144,12 @@ public class MatrixProbabilitiesGenerator {
 	}
 	
 	/**
-	 * We check if the plane generated from @head and @degrees is already body hit in tileMatrix
+	 * We check if the plane generated from @head and @degrees is already body hit in 
+	 * tileMatrix and return the number of hits
 	 */
-	public static boolean isPlaneBodyHit(Point head, int degrees, TileType[][] tileMatrix)
+	public static int getPlaneBodyHits(Point head, int degrees, TileType[][] tileMatrix)
 	{
+		int hits = 0;
 		if (isHeadValid(head, degrees))
 		{
 			Plane plane = new Plane();
@@ -170,15 +160,11 @@ public class MatrixProbabilitiesGenerator {
 			{
 				if (tileMatrix[point.x][point.y] == TileType.HIT_BODY)
 				{
-					return true;
+					hits++;
 				}
 			}
-			return false;
 		}
-		else
-		{
-			return false;
-		}
+		return hits;
 	}
 	
 	/**
