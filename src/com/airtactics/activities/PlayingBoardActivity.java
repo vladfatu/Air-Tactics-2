@@ -18,11 +18,13 @@ import com.airtactics.engine.Point;
 import com.airtactics.interfaces.GameListener;
 import com.airtactics.managers.GameManager;
 import com.airtactics.pojos.Game;
+import com.airtactics.pojos.Game.GameType;
 import com.airtactics.views.PlaneView;
 import com.airtactics.views.Tile;
 import com.airtactics.views.Tile.TileType;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.example.games.basegameutils.BaseGameActivity;
 
 /**
@@ -161,7 +163,14 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 						
 						if (this.selectedTile != null && this.selectedTile.getPosition().equals(currentTilePosition))
 						{
-							TileType tileType = this.game.clickOpponentBoard(this, currentTilePosition);
+							GoogleApiClient apiClient = null;
+							String matchId = null;
+							if (this.game.getGameType() == GameType.MULTI_PLAYER)
+							{
+								apiClient = getApiClient();
+								matchId = getIntent().getExtras().getString(GAME_ID);
+							}
+							TileType tileType = this.game.clickOpponentBoard(this, currentTilePosition, matchId, apiClient);
 							Tile tile = new Tile(this, currentTilePosition, tileType);
 	
 							if (tile != null)

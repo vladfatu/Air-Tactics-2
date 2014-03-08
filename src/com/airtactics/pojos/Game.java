@@ -17,7 +17,11 @@ import com.airtactics.ai.SmartAI;
 import com.airtactics.engine.Point;
 import com.airtactics.interfaces.GameListener;
 import com.airtactics.views.Tile.TileType;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.games.Games;
 import com.google.android.gms.games.multiplayer.turnbased.TurnBasedMatch;
+import com.google.android.gms.games.multiplayer.turnbased.TurnBasedMultiplayer;
 
 /**
  * @author Vlad
@@ -88,7 +92,7 @@ public class Game{
 		this.gameType = gameType;
 	}
 
-	public TileType clickOpponentBoard(Context context, Point position)
+	public TileType clickOpponentBoard(Context context, Point position, String matchId, GoogleApiClient apiClient)
 	{
 		getOpponentBoard().markAsSeen(position);
 		TileType tileType = getOpponentBoard().checkPoint(position);
@@ -99,8 +103,23 @@ public class Game{
 			{
 				updateScore();
 			}
-			Point opponentsShotPosition = this.ai.shoot(context);
-			opponentShot(opponentsShotPosition);
+			if (this.gameType == GameType.SINGLE_PLAYER)
+			{
+				Point opponentsShotPosition = this.ai.shoot(context);
+				opponentShot(opponentsShotPosition);
+			}
+			else
+			{
+				this.lastGameState.setLastMove(new Move(yourUsername, position)); 
+				Games.TurnBasedMultiplayer.takeTurn(apiClient, matchId, persist(), getOpponentUsername()).setResultCallback(
+						new ResultCallback<TurnBasedMultiplayer.UpdateMatchResult>() {
+							@Override
+							public void onResult(TurnBasedMultiplayer.UpdateMatchResult result)
+							{
+								//TODO
+							}
+						});
+			}
 		}
 		return tileType;
 	}

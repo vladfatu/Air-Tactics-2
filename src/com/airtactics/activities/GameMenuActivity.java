@@ -92,7 +92,7 @@ public class GameMenuActivity extends BaseGameActivity{
 			public void onClick(View v)
 			{
 				Intent intent = Games.TurnBasedMultiplayer.getSelectOpponentsIntent(getApiClient(),
-		                1, 7, true);
+						Constants.NUMBER_OF_PLAYERS -1, Constants.NUMBER_OF_PLAYERS -1, true);
 		        startActivityForResult(intent, RC_SELECT_PLAYERS);
 				
 			}
