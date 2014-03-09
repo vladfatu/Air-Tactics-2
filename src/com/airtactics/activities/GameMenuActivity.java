@@ -40,6 +40,7 @@ public class GameMenuActivity extends BaseGameActivity{
 	private Button buttonOnline;
 	private Button buttonInviteFriends;
 	private Button buttonCheckMatches;
+	private boolean alreadyStartedMatch;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -125,9 +126,9 @@ public class GameMenuActivity extends BaseGameActivity{
             TurnBasedMatch match = data
                     .getParcelableExtra(GamesClient.EXTRA_TURN_BASED_MATCH);
 
-//            if (match != null) {
-//                updateMatch(match);
-//            }
+            if (match != null) {
+                handleMatch(match);
+            }
 //
 //            Log.d(TAG, "Match = " + match);
         } else if (request == RC_SELECT_PLAYERS) {
@@ -174,6 +175,30 @@ public class GameMenuActivity extends BaseGameActivity{
             //showSpinner();
         }
     }
+	
+	private void handleMatch(TurnBasedMatch match)
+	{
+		GameState gameState = null;
+		if (match.getData() != null)
+		{
+			gameState = Game.unpersist(match.getData());
+		}
+		if (gameState != null && gameState.isStarted())
+		{
+			String playerId = Games.Players.getCurrentPlayerId(getApiClient());
+	    	String myParticipantId = match.getParticipantId(playerId);
+			Game game = new Game(GameType.MULTI_PLAYER, myParticipantId, getNextParticipantId(match));
+			game.setLastGameState(gameState);
+			String gameId = GameManager.getManager().addGame(match.getMatchId(), game);
+			Intent intent = new Intent(GameMenuActivity.this, PlayingBoardActivity.class);
+			intent.putExtra(PlayingBoardActivity.GAME_ID, gameId);
+			startActivity(intent);
+		}
+		else
+		{
+			startMultiPlayerGame(match, gameState);
+		}
+	}
 	
 	private void startMultiPlayerGame(TurnBasedMatch match, GameState gameState)
 	{
@@ -234,23 +259,12 @@ public class GameMenuActivity extends BaseGameActivity{
 	{
 		Toast.makeText(this, "Signed in", Toast.LENGTH_SHORT).show();
 		GameManager.getManager().registerAsListener(getApiClient());
-		TurnBasedMatch match = mHelper.getTurnBasedMatch();
-		if (match != null) {
-			GameState gameState = Game.unpersist(match.getData());
-			if (gameState.isStarted())
-			{
-				String playerId = Games.Players.getCurrentPlayerId(getApiClient());
-		    	String myParticipantId = match.getParticipantId(playerId);
-				Game game = new Game(GameType.MULTI_PLAYER, myParticipantId, getNextParticipantId(match));
-				game.setLastGameState(gameState);
-				String gameId = GameManager.getManager().addGame(match.getMatchId(), game);
-				Intent intent = new Intent(GameMenuActivity.this, PlayingBoardActivity.class);
-				intent.putExtra(PlayingBoardActivity.GAME_ID, gameId);
-				startActivity(intent);
-			}
-			else
-			{
-				startMultiPlayerGame(match, gameState);
+		if (!alreadyStartedMatch)
+		{
+			TurnBasedMatch match = mHelper.getTurnBasedMatch();
+			if (match != null) {
+				alreadyStartedMatch = true;
+				handleMatch(match);
 			}
 		}
 	}

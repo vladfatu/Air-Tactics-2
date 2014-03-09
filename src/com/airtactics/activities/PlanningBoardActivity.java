@@ -265,7 +265,7 @@ public class PlanningBoardActivity extends BaseGameActivity {
 	
 	public void startMatch()
 	{
-
+		this.game.setPlayerToMove(game.getOpponentUsername());
 		TurnBasedMatch match = getIntent().getParcelableExtra(GamesClient.EXTRA_TURN_BASED_MATCH);
 		Games.TurnBasedMultiplayer.takeTurn(getApiClient(), match.getMatchId(), this.game.persist(), game.getOpponentUsername()).setResultCallback(
 				new ResultCallback<TurnBasedMultiplayer.UpdateMatchResult>() {

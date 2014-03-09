@@ -4,9 +4,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Context;
 import android.util.Log;
 
+import com.airtactics.constants.Constants;
 import com.airtactics.engine.Point;
+import com.airtactics.views.Tile;
 import com.airtactics.views.Tile.TileType;
 
 
@@ -146,6 +149,24 @@ public class Board implements Serializable{
 			}
 		}
 		return count;
+	}
+	
+	public List<Tile> getAlreadyHitTiles(Context context)
+	{
+		List<Tile> tiles = new ArrayList<Tile>();
+		for (int i =0;i<Constants.GRID_SIZE;i++)
+		{
+			for (int j =0;j<Constants.GRID_SIZE;j++)
+			{
+				if (this.boardMatrix[i][j] == 1)
+				{
+					Point position = new Point(i, j);
+					Tile tile = new Tile(context, position, checkPoint(position));
+					tiles.add(tile);
+				}
+			}
+		}
+		return tiles;
 	}
 
 }

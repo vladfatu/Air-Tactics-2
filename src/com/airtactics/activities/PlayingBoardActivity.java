@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.airtactics.engine.Point;
 import com.airtactics.interfaces.GameListener;
 import com.airtactics.managers.GameManager;
+import com.airtactics.pojos.Board;
 import com.airtactics.pojos.Game;
 import com.airtactics.pojos.Game.GameType;
 import com.airtactics.views.PlaneView;
@@ -25,6 +26,10 @@ import com.airtactics.views.Tile.TileType;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.multiplayer.turnbased.TurnBasedMatch;
+import com.google.android.gms.games.multiplayer.turnbased.TurnBasedMultiplayer;
 import com.google.example.games.basegameutils.BaseGameActivity;
 
 /**
@@ -46,6 +51,8 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 	private ImageView hitHeadImageView, hitBodyImageView, noHitImageView;
 	private TextView yourScoreTextView, oppScoreTextView;
 	private Tile selectedTile;
+	private String gameId;
+	private boolean hasLoaded;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -55,7 +62,7 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 
 		if (getIntent().getExtras() != null)
 		{
-			String gameId = getIntent().getExtras().getString(GAME_ID);
+			gameId = getIntent().getExtras().getString(GAME_ID);
 			this.game = GameManager.getManager().getGame(gameId);
 			this.game.addGameListener(this);
 		} else
@@ -79,6 +86,7 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 		yourScoreTextView = (TextView) findViewById(R.id.textViewYourScore);
 		oppScoreTextView = (TextView) findViewById(R.id.textViewOppScore);
 
+		this.hasLoaded = false;
 		final RelativeLayout layout = (RelativeLayout) findViewById(R.id.relativeLayout);
 		ViewTreeObserver vto = layout.getViewTreeObserver();
 		vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
@@ -87,6 +95,7 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 			@Override
 			public void onGlobalLayout()
 			{
+				hasLoaded = true;
 				setupGame();
 				Tile.HIT_HEAD_WIDTH = hitHeadImageView.getWidth();
 				Tile.HIT_BODY_WIDTH = hitBodyImageView.getWidth();
@@ -101,6 +110,51 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 			}
 		});
 
+	}
+	
+	@Override
+	protected void onResume()
+	{
+//		if (this.hasLoaded && this.game != null && this.game.getGameType() == GameType.MULTI_PLAYER)
+//		{
+//			Games.TurnBasedMultiplayer.loadMatch(getApiClient(), this.gameId).setResultCallback(
+//					new ResultCallback<TurnBasedMultiplayer.LoadMatchResult>() {
+//
+//						@Override
+//						public void onResult(TurnBasedMultiplayer.LoadMatchResult matchResult)
+//						{
+//							TurnBasedMatch match = matchResult.getMatch();
+//							game.update(match);
+//
+//						}
+//					});
+//		}
+		super.onResume();
+	}
+	
+	private void setupTiles()
+	{
+		if (this.game != null)
+		{
+			Board yourBoard = game.getYourBoard();
+			if (yourBoard != null)
+			{
+//				removeAllTiles(this.gridSmallFrameLayout);
+				for (Tile tile : this.game.getYourBoard().getAlreadyHitTiles(this))
+				{
+					addTile(this.gridSmallFrameLayout, tile);
+				}
+			}
+			Board opponentBoard = game.getOpponentBoard();
+			if (opponentBoard != null)
+			{
+//				removeAllTiles(this.gridFrameLayout);
+				for (Tile tile : this.game.getOpponentBoard().getAlreadyHitTiles(this))
+				{
+					addTile(this.gridFrameLayout, tile);
+				}
+			}
+		}
 	}
 
 	private void setupGame()
@@ -123,6 +177,7 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 				game.getYourBoard());
 		planeView3.updateImageView();
 		
+		setupTiles();
 		updateScore();
 	}
 	
@@ -154,62 +209,68 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 			{
 				case MotionEvent.ACTION_DOWN:
 				{
-					if (this.game.isYourTurn())
+					if (this.game.isStarted())
 					{
-						FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
-								FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-						
-						Point currentTilePosition = Tile.getPosition(currentX, currentY, this.gridLargeImageView.getWidth());
-						
-						if (this.selectedTile != null && this.selectedTile.getPosition().equals(currentTilePosition))
+						if (this.game.isYourTurn())
 						{
-							GoogleApiClient apiClient = null;
-							String matchId = null;
-							if (this.game.getGameType() == GameType.MULTI_PLAYER)
+							FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+									FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+
+							Point currentTilePosition = Tile.getPosition(currentX, currentY,
+									this.gridLargeImageView.getWidth());
+
+							if (this.selectedTile != null
+									&& this.selectedTile.getPosition().equals(currentTilePosition))
 							{
-								apiClient = getApiClient();
-								matchId = getIntent().getExtras().getString(GAME_ID);
-							}
-							TileType tileType = this.game.clickOpponentBoard(this, currentTilePosition, matchId, apiClient);
-							Tile tile = new Tile(this, currentTilePosition, tileType);
-	
-							if (tile != null)
+								GoogleApiClient apiClient = null;
+								String matchId = null;
+								if (this.game.getGameType() == GameType.MULTI_PLAYER)
+								{
+									apiClient = getApiClient();
+									matchId = this.gameId;
+								}
+								TileType tileType = this.game.clickOpponentBoard(this, currentTilePosition, matchId,
+										apiClient);
+								Tile tile = new Tile(this, currentTilePosition, tileType);
+
+								addTile(this.gridFrameLayout, tile);
+								if (tile != null)
+								{
+									this.gridFrameLayout.removeView(this.selectedTile.getImageView());
+									this.selectedTile = null;
+								}
+							} else
 							{
-								Point viewPosition = tile.getViewPosition(this.gridLargeImageView.getWidth(), false);
-								lp.setMargins(viewPosition.x, viewPosition.y, 0, 0);
-	
-								this.gridFrameLayout.addView(tile.getImageView(), lp);
-								this.gridFrameLayout.removeView(this.selectedTile.getImageView());
-								this.selectedTile = null;
+								if (this.selectedTile == null)
+								{
+									this.selectedTile = new Tile(currentTilePosition);
+									this.selectedTile.setSelected(true);
+									ImageView imageView = new ImageView(this);
+									imageView.setImageResource(this.selectedTile.getResourceId());
+									this.selectedTile.setImageView(imageView);
+
+									Point viewPosition = this.selectedTile.getViewPosition(
+											this.gridLargeImageView.getWidth(), false);
+									lp.setMargins(viewPosition.x, viewPosition.y, 0, 0);
+
+									this.gridFrameLayout.addView(this.selectedTile.getImageView(), lp);
+								} else
+								{
+									this.selectedTile.setPosition(currentTilePosition);
+									Point viewPosition = this.selectedTile.getViewPosition(
+											this.gridLargeImageView.getWidth(), false);
+									lp.setMargins(viewPosition.x, viewPosition.y, 0, 0);
+
+									this.selectedTile.getImageView().setLayoutParams(lp);
+								}
 							}
-						}
-						else
+						} else
 						{
-							if (this.selectedTile == null)
-							{
-								this.selectedTile = new Tile(currentTilePosition);
-								this.selectedTile.setSelected(true);
-								ImageView imageView = new ImageView(this);
-								imageView.setImageResource(this.selectedTile.getResourceId());
-								this.selectedTile.setImageView(imageView);
-								
-								Point viewPosition = this.selectedTile.getViewPosition(this.gridLargeImageView.getWidth(), false);
-								lp.setMargins(viewPosition.x, viewPosition.y, 0, 0);
-								
-								this.gridFrameLayout.addView(this.selectedTile.getImageView(), lp);
-							}
-							else
-							{
-								this.selectedTile.setPosition(currentTilePosition);
-								Point viewPosition = this.selectedTile.getViewPosition(this.gridLargeImageView.getWidth(), false);
-								lp.setMargins(viewPosition.x, viewPosition.y, 0, 0);
-								
-								this.selectedTile.getImageView().setLayoutParams(lp);
-							}
+							Toast.makeText(this, getString(R.string.not_your_turn), Toast.LENGTH_SHORT).show();
 						}
 					} else
 					{
-						Toast.makeText(this, getString(R.string.not_your_turn), Toast.LENGTH_SHORT).show();
+						Toast.makeText(this, getString(R.string.not_started), Toast.LENGTH_SHORT).show();
 					}
 					break;
 				}
@@ -226,19 +287,29 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 		super.onDestroy();
 	}
 	
-	@Override
-	public void onOpponentShot(Point point)
+	public void removeAllTiles(FrameLayout gridLayout)
+	{
+		gridLayout.removeAllViews();
+	}
+	
+	public void addTile(FrameLayout gridLayout, Tile tile)
 	{
 		FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
 				FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-		Tile tile = new Tile(this, point, this.game.getYourBoard().checkPoint(point));
 		if (tile != null)
 		{
-			Point viewPosition = tile.getViewPosition(this.gridSmallImageView.getWidth(), false);
+			Point viewPosition = tile.getViewPosition(gridLayout.getWidth(), false);
 			lp.setMargins(viewPosition.x, viewPosition.y, 0, 0);
 
-			this.gridSmallFrameLayout.addView(tile.getImageView(), lp);
+			gridLayout.addView(tile.getImageView(), lp);
 		}
+	}
+	
+	@Override
+	public void onOpponentShot(Point point)
+	{
+		Tile tile = new Tile(this, point, this.game.getYourBoard().checkPoint(point));
+		addTile(this.gridSmallFrameLayout, tile);
 	}
 
 	@Override

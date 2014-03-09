@@ -16,6 +16,7 @@ public class GameState implements Serializable{
 	
 	private Map<String, Board> boards;
 	private Move lastMove;
+	private String playerToMove;
 	
 	public GameState()
 	{
@@ -45,6 +46,16 @@ public class GameState implements Serializable{
 	public boolean isStarted()
 	{
 		return this.boards.size() == Constants.NUMBER_OF_PLAYERS;
+	}
+
+	public String getPlayerToMove()
+	{
+		return playerToMove;
+	}
+
+	public void setPlayerToMove(String playerToMove)
+	{
+		this.playerToMove = playerToMove;
 	}
 
 }

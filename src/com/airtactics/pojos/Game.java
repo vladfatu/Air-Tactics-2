@@ -33,8 +33,6 @@ public class Game{
 		SINGLE_PLAYER, MULTI_PLAYER
 	}
 
-	private String playerToMove;
-
 	private String yourUsername;
 
 	private String opponentUsername;
@@ -51,9 +49,9 @@ public class Game{
 		this.yourUsername = yourUsername;
 		this.opponentUsername = opponentUsername;
 		this.gameType = type;
-		this.playerToMove = yourUsername;
 		this.gameListeners = new ArrayList<GameListener>();
 		this.lastGameState = new GameState();
+		this.lastGameState.setPlayerToMove(yourUsername);
 		
 	}
 	
@@ -156,12 +154,12 @@ public class Game{
 
 	public boolean isYourTurn()
 	{
-		return playerToMove.equals(yourUsername);
+		return this.lastGameState.getPlayerToMove().equals(yourUsername);
 	}
 
 	public void setPlayerToMove(String playerToMove)
 	{
-		this.playerToMove = playerToMove;
+		this.lastGameState.setPlayerToMove(playerToMove);
 	}
 
 	public void addGameListener(GameListener gameListener)
@@ -172,6 +170,11 @@ public class Game{
 	public void removeGameListeners(GameListener gameListener)
 	{
 		this.gameListeners.remove(gameListener);
+	}
+	
+	public boolean isStarted()
+	{
+		return this.lastGameState.isStarted();
 	}
 	
 	public void update(TurnBasedMatch match)
