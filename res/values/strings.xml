@@ -19,7 +19,10 @@
     <string name="zero">0</string>
     <string name="not_your_turn">It\'s not you turn, plase wait for your opponent to make his move.</string>
     <string name="not_started">The game has not started yet.</string>
+    <string name="finished">The game is finished.</string>
     <string name="invide_friends">Invite Friends</string>
     <string name="check_matches">Check Matches</string>
+    <string name="you_won">You Won!</string>
+    <string name="you_lost">You Lost!</string>
 
 </resources>

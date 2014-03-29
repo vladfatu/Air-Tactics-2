@@ -16,6 +16,7 @@ import com.google.android.gms.games.multiplayer.turnbased.TurnBasedMatch;
 public class GameManager implements OnTurnBasedMatchUpdateReceivedListener{
 	
 	private Map<String, Game> currentGames;
+	private GoogleApiClient apiClient;
 	
 	private static GameManager instance = new GameManager();
 	
@@ -47,6 +48,7 @@ public class GameManager implements OnTurnBasedMatchUpdateReceivedListener{
 	
 	public void registerAsListener(GoogleApiClient apiClient)
 	{
+		this.apiClient = apiClient;
 		Games.TurnBasedMultiplayer.registerMatchUpdateListener(apiClient, this);
 	}
 
@@ -56,7 +58,7 @@ public class GameManager implements OnTurnBasedMatchUpdateReceivedListener{
 		Game game = this.currentGames.get(match.getMatchId());
 		if (game != null)
 		{
-			game.update(match);
+			game.update(match, this.apiClient);
 		}
 		
 	}

@@ -14,8 +14,10 @@ import android.content.Context;
 
 import com.airtactics.ai.AI;
 import com.airtactics.ai.SmartAI;
+import com.airtactics.constants.Constants;
 import com.airtactics.engine.Point;
 import com.airtactics.interfaces.GameListener;
+import com.airtactics.utils.GooglePlayUtils;
 import com.airtactics.views.Tile.TileType;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -90,7 +92,7 @@ public class Game{
 		this.gameType = gameType;
 	}
 
-	public TileType clickOpponentBoard(Context context, Point position, String matchId, GoogleApiClient apiClient)
+	public TileType clickOpponentBoard(Context context, Point position, final String matchId, final GoogleApiClient apiClient)
 	{
 		getOpponentBoard().markAsSeen(position);
 		TileType tileType = getOpponentBoard().checkPoint(position);
@@ -109,14 +111,21 @@ public class Game{
 			else
 			{
 				this.lastGameState.setLastMove(new Move(yourUsername, position)); 
-				Games.TurnBasedMultiplayer.takeTurn(apiClient, matchId, persist(), getOpponentUsername()).setResultCallback(
+				if (isFinished())
+				{
+					Games.TurnBasedMultiplayer.finishMatch(apiClient, matchId, persist());
+				}
+				else
+				{
+					Games.TurnBasedMultiplayer.takeTurn(apiClient, matchId, persist(), getOpponentUsername()).setResultCallback(
 						new ResultCallback<TurnBasedMultiplayer.UpdateMatchResult>() {
 							@Override
 							public void onResult(TurnBasedMultiplayer.UpdateMatchResult result)
 							{
-								//TODO
+								
 							}
 						});
+				}
 			}
 		}
 		return tileType;
@@ -177,8 +186,12 @@ public class Game{
 		return this.lastGameState.isStarted();
 	}
 	
-	public void update(TurnBasedMatch match)
+	public void update(TurnBasedMatch match, GoogleApiClient apiClient)
 	{
+		if (this.opponentUsername == null)
+		{
+			this.opponentUsername = GooglePlayUtils.getNextParticipantId(match, apiClient);
+		}
 		GameState newGameState = unpersist(match.getData());
 		boolean wasGameStarted = this.lastGameState.isStarted();
 		this.lastGameState = newGameState;
@@ -192,6 +205,11 @@ public class Game{
 		}
 	}
 	
+	public String getYourUsername()
+	{
+		return yourUsername;
+	}
+	
 	public String getOpponentUsername()
 	{
 		return opponentUsername;
@@ -200,6 +218,39 @@ public class Game{
 	public void setLastGameState(GameState lastGameState)
 	{
 		this.lastGameState = lastGameState;
+	}
+	
+	public boolean isFinished()
+	{
+		return getWinner() != null;
+	}
+	
+	public boolean isCurrentUserTheWinner()
+	{
+		String winner = getWinner();
+		if (winner != null && winner.equals(yourUsername))
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	public String getWinner()
+	{
+		Board yourBoard = this.lastGameState.getBoard(yourUsername);
+		if (yourBoard != null && yourBoard.getNumberOfHitHeads() == Constants.NUMBER_OF_PLANES)
+		{
+			return opponentUsername;
+		}
+		if (opponentUsername != null)
+		{
+			Board opponentBoard = this.lastGameState.getBoard(opponentUsername);
+			if (opponentBoard!= null && opponentBoard.getNumberOfHitHeads() == Constants.NUMBER_OF_PLANES)
+			{
+				return yourUsername;
+			}
+		}
+		return null;
 	}
 
 	public byte[] persist()

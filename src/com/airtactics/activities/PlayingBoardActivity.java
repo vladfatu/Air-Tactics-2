@@ -115,20 +115,20 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 	@Override
 	protected void onResume()
 	{
-//		if (this.hasLoaded && this.game != null && this.game.getGameType() == GameType.MULTI_PLAYER)
-//		{
-//			Games.TurnBasedMultiplayer.loadMatch(getApiClient(), this.gameId).setResultCallback(
-//					new ResultCallback<TurnBasedMultiplayer.LoadMatchResult>() {
-//
-//						@Override
-//						public void onResult(TurnBasedMultiplayer.LoadMatchResult matchResult)
-//						{
-//							TurnBasedMatch match = matchResult.getMatch();
-//							game.update(match);
-//
-//						}
-//					});
-//		}
+		if (this.hasLoaded && this.game != null && this.game.getGameType() == GameType.MULTI_PLAYER)
+		{
+			Games.TurnBasedMultiplayer.loadMatch(getApiClient(), this.gameId).setResultCallback(
+					new ResultCallback<TurnBasedMultiplayer.LoadMatchResult>() {
+
+						@Override
+						public void onResult(TurnBasedMultiplayer.LoadMatchResult matchResult)
+						{
+							TurnBasedMatch match = matchResult.getMatch();
+							game.update(match, getApiClient());
+
+						}
+					});
+		}
 		super.onResume();
 	}
 	
@@ -191,6 +191,18 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 		{
 			oppScoreTextView.setText(game.getOpponentBoard().getNumberOfHitHeads() + "");
 		}
+		String winner = this.game.getWinner();
+		if (winner != null)
+		{
+			if (winner.equals(this.game.getYourUsername()))
+			{
+				Toast.makeText(this, getResources().getString(R.string.you_won), Toast.LENGTH_SHORT).show();;
+			}
+			else
+			{
+				Toast.makeText(this, getResources().getString(R.string.you_lost), Toast.LENGTH_SHORT).show();;
+			}
+		}
 	}
 	
 	public boolean onTouchEvent(MotionEvent event)
@@ -211,62 +223,69 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 				{
 					if (this.game.isStarted())
 					{
-						if (this.game.isYourTurn())
+						if (!this.game.isFinished())
 						{
-							FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
-									FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-
-							Point currentTilePosition = Tile.getPosition(currentX, currentY,
-									this.gridLargeImageView.getWidth());
-
-							if (this.selectedTile != null
-									&& this.selectedTile.getPosition().equals(currentTilePosition))
+							if (this.game.isYourTurn())
 							{
-								GoogleApiClient apiClient = null;
-								String matchId = null;
-								if (this.game.getGameType() == GameType.MULTI_PLAYER)
+								FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+										FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+	
+								Point currentTilePosition = Tile.getPosition(currentX, currentY,
+										this.gridLargeImageView.getWidth());
+	
+								if (this.selectedTile != null
+										&& this.selectedTile.getPosition().equals(currentTilePosition))
 								{
-									apiClient = getApiClient();
-									matchId = this.gameId;
-								}
-								TileType tileType = this.game.clickOpponentBoard(this, currentTilePosition, matchId,
-										apiClient);
-								Tile tile = new Tile(this, currentTilePosition, tileType);
-
-								addTile(this.gridFrameLayout, tile);
-								if (tile != null)
+									GoogleApiClient apiClient = null;
+									String matchId = null;
+									if (this.game.getGameType() == GameType.MULTI_PLAYER)
+									{
+										apiClient = getApiClient();
+										matchId = this.gameId;
+									}
+									TileType tileType = this.game.clickOpponentBoard(this, currentTilePosition, matchId,
+											apiClient);
+									Tile tile = new Tile(this, currentTilePosition, tileType);
+	
+									addTile(this.gridFrameLayout, tile);
+									if (tile != null)
+									{
+										this.gridFrameLayout.removeView(this.selectedTile.getImageView());
+										this.selectedTile = null;
+									}
+								} else
 								{
-									this.gridFrameLayout.removeView(this.selectedTile.getImageView());
-									this.selectedTile = null;
+									if (this.selectedTile == null)
+									{
+										this.selectedTile = new Tile(currentTilePosition);
+										this.selectedTile.setSelected(true);
+										ImageView imageView = new ImageView(this);
+										imageView.setImageResource(this.selectedTile.getResourceId());
+										this.selectedTile.setImageView(imageView);
+	
+										Point viewPosition = this.selectedTile.getViewPosition(
+												this.gridLargeImageView.getWidth(), false);
+										lp.setMargins(viewPosition.x, viewPosition.y, 0, 0);
+	
+										this.gridFrameLayout.addView(this.selectedTile.getImageView(), lp);
+									} else
+									{
+										this.selectedTile.setPosition(currentTilePosition);
+										Point viewPosition = this.selectedTile.getViewPosition(
+												this.gridLargeImageView.getWidth(), false);
+										lp.setMargins(viewPosition.x, viewPosition.y, 0, 0);
+	
+										this.selectedTile.getImageView().setLayoutParams(lp);
+									}
 								}
 							} else
 							{
-								if (this.selectedTile == null)
-								{
-									this.selectedTile = new Tile(currentTilePosition);
-									this.selectedTile.setSelected(true);
-									ImageView imageView = new ImageView(this);
-									imageView.setImageResource(this.selectedTile.getResourceId());
-									this.selectedTile.setImageView(imageView);
-
-									Point viewPosition = this.selectedTile.getViewPosition(
-											this.gridLargeImageView.getWidth(), false);
-									lp.setMargins(viewPosition.x, viewPosition.y, 0, 0);
-
-									this.gridFrameLayout.addView(this.selectedTile.getImageView(), lp);
-								} else
-								{
-									this.selectedTile.setPosition(currentTilePosition);
-									Point viewPosition = this.selectedTile.getViewPosition(
-											this.gridLargeImageView.getWidth(), false);
-									lp.setMargins(viewPosition.x, viewPosition.y, 0, 0);
-
-									this.selectedTile.getImageView().setLayoutParams(lp);
-								}
+								Toast.makeText(this, getString(R.string.not_your_turn), Toast.LENGTH_SHORT).show();
 							}
-						} else
+						}
+						else
 						{
-							Toast.makeText(this, getString(R.string.not_your_turn), Toast.LENGTH_SHORT).show();
+							Toast.makeText(this, getString(R.string.finished), Toast.LENGTH_SHORT).show();
 						}
 					} else
 					{

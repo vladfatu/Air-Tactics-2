@@ -16,6 +16,7 @@ import com.airtactics.managers.GameManager;
 import com.airtactics.pojos.Game;
 import com.airtactics.pojos.Game.GameType;
 import com.airtactics.pojos.GameState;
+import com.airtactics.utils.GooglePlayUtils;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.common.api.ResultCallback;
@@ -147,9 +148,9 @@ public class GameMenuActivity extends BaseGameActivity{
             Bundle autoMatchCriteria = null;
 
             int minAutoMatchPlayers = data.getIntExtra(
-                    GamesClient.EXTRA_MIN_AUTOMATCH_PLAYERS, 0);
+                    GamesClient.EXTRA_MIN_AUTOMATCH_PLAYERS, Constants.NUMBER_OF_PLAYERS -1);
             int maxAutoMatchPlayers = data.getIntExtra(
-                    GamesClient.EXTRA_MAX_AUTOMATCH_PLAYERS, 0);
+                    GamesClient.EXTRA_MAX_AUTOMATCH_PLAYERS, Constants.NUMBER_OF_PLAYERS -1);
 
             if (minAutoMatchPlayers > 0) {
                 autoMatchCriteria = RoomConfig.createAutoMatchCriteria(
@@ -169,7 +170,7 @@ public class GameMenuActivity extends BaseGameActivity{
                 public void onResult(TurnBasedMultiplayer.InitiateMatchResult result) {
                     //processResult(result);
                 	TurnBasedMatch match = result.getMatch();
-                	startMultiPlayerGame(match, null);
+                	handleMatch(match);
                 }
             });
             //showSpinner();
@@ -187,7 +188,7 @@ public class GameMenuActivity extends BaseGameActivity{
 		{
 			String playerId = Games.Players.getCurrentPlayerId(getApiClient());
 	    	String myParticipantId = match.getParticipantId(playerId);
-			Game game = new Game(GameType.MULTI_PLAYER, myParticipantId, getNextParticipantId(match));
+			Game game = new Game(GameType.MULTI_PLAYER, myParticipantId, GooglePlayUtils.getNextParticipantId(match, getApiClient()));
 			game.setLastGameState(gameState);
 			String gameId = GameManager.getManager().addGame(match.getMatchId(), game);
 			Intent intent = new Intent(GameMenuActivity.this, PlayingBoardActivity.class);
@@ -206,7 +207,7 @@ public class GameMenuActivity extends BaseGameActivity{
 		intent.putExtra(GamesClient.EXTRA_TURN_BASED_MATCH, match);
     	String playerId = Games.Players.getCurrentPlayerId(getApiClient());
     	String myParticipantId = match.getParticipantId(playerId);
-    	Game game = new Game(GameType.MULTI_PLAYER, myParticipantId, getNextParticipantId(match));
+    	Game game = new Game(GameType.MULTI_PLAYER, myParticipantId, GooglePlayUtils.getNextParticipantId(match, getApiClient()));
     	GameManager.getManager().addGame(match.getMatchId(), game);
     	intent.putExtra(PlayingBoardActivity.GAME_ID, match.getMatchId());
     	if (gameState != null)
@@ -217,35 +218,6 @@ public class GameMenuActivity extends BaseGameActivity{
     	GameMenuActivity.this.startActivity(intent);
     	Toast.makeText(GameMenuActivity.this, "game created ", Toast.LENGTH_SHORT).show();
 	}
-	
-	public String getNextParticipantId(TurnBasedMatch match) {
-
-        String playerId = Games.Players.getCurrentPlayerId(getApiClient());
-        String myParticipantId = match.getParticipantId(playerId);
-
-        ArrayList<String> participantIds = match.getParticipantIds();
-
-        int desiredIndex = -1;
-
-        for (int i = 0; i < participantIds.size(); i++) {
-            if (participantIds.get(i).equals(myParticipantId)) {
-                desiredIndex = i + 1;
-            }
-        }
-
-        if (desiredIndex < participantIds.size()) {
-            return participantIds.get(desiredIndex);
-        }
-
-        if (match.getAvailableAutoMatchSlots() <= 0) {
-            // You've run out of automatch slots, so we start over.
-            return participantIds.get(0);
-        } else {
-            // You have not yet fully automatched, so null will find a new
-            // person to play against.
-            return null;
-        }
-    }
 	
 	@Override
 	public void onSignInFailed()
