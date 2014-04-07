@@ -62,7 +62,10 @@ public class Game{
 		Board board = new Board();
 //		if (this.gameType == GameType.SINGLE_PLAYER)
 //		{
+		if (this.ai == null)
+		{
 			this.ai = new SmartAI(board);
+		}
 //		}
 		this.lastGameState.addBoard(yourUsername, board);
 	}
@@ -325,6 +328,16 @@ public class Game{
 		  }
 		}
 		return gameState;
+	}
+
+	public AI getAi()
+	{
+		return ai;
+	}
+
+	public void setAi(AI ai)
+	{
+		this.ai = ai;
 	}
 
 }

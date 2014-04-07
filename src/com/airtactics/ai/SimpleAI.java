@@ -21,14 +21,25 @@ public class SimpleAI extends AI{
 		int x = r.nextInt(10);
 		int y = r.nextInt(10);
 		
-		while (getOpponentBoard().isPositionAlreayShot(new Point(x, y)))
+		while (getOpponentBoard().isPositionAlreayShot(new Point(x, y)) || isCorner(x, y))
 		{
 			x = r.nextInt(10);
 			y = r.nextInt(10);
 		}
 		
-		return new Point(x, y);
+		Point point = new Point(x, y);
+		getOpponentBoard().markAsSeen(point);
+		return point;
 		
+	}
+	
+	private boolean isCorner(int x, int y)
+	{
+		if ((x == 0 || x == 9) && (y == 0 || y == 9))
+		{
+			return true;
+		}
+		return false;
 	}
 
 }

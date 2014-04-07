@@ -24,5 +24,6 @@
     <string name="check_matches">Check Matches</string>
     <string name="you_won">You Won!</string>
     <string name="you_lost">You Lost!</string>
+    <string name="choose_your_opponent">Choose Your Opponent</string>
 
 </resources>

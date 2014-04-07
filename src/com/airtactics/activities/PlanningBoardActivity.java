@@ -2,6 +2,8 @@ package com.airtactics.activities;
 
 import airtactics.com.R;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,6 +19,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.airtactics.ai.SimpleAI;
+import com.airtactics.ai.SmartAI;
+import com.airtactics.ai.SmartRandomAI;
 import com.airtactics.constants.Constants;
 import com.airtactics.managers.GameManager;
 import com.airtactics.pojos.Game;
@@ -102,12 +107,45 @@ public class PlanningBoardActivity extends BaseGameActivity {
 				}
 				else
 				{
-					game.getOpponentBoard().randomizePlanes();
-					String gameId = GameManager.getManager().addGame(Constants.DEFAULT_ID_SINGLE_PLAYER, game);
-					Intent intent = new Intent(PlanningBoardActivity.this, PlayingBoardActivity.class);
-					intent.putExtra(PlayingBoardActivity.GAME_ID, gameId);
-					startActivity(intent);
-					finish();
+					String[] opponents = new String[3];
+					opponents[0] = "Smart Ai";
+					opponents[1] = "Smart Random Ai";
+					opponents[2] = "Simple Ai";
+					AlertDialog.Builder builder = new AlertDialog.Builder(PlanningBoardActivity.this);
+				    builder.setTitle(R.string.choose_your_opponent)
+				           .setItems(opponents, new DialogInterface.OnClickListener() {
+				               public void onClick(DialogInterface dialog, int which) {
+				            	   switch (which)
+				            	   {
+				            		  case 0:
+				            		  {
+				            			  game.setAi(new SmartAI(game.getYourBoard()));
+				            			  break;
+				            		  }
+				            		  case 1:
+				            		  {
+				            			  game.setAi(new SmartRandomAI(game.getYourBoard()));
+				            			  break;
+				            		  }
+				            		  case 2:
+				            		  {
+				            			  game.setAi(new SimpleAI(game.getYourBoard()));
+				            			  break;
+				            		  }
+
+				            		  default:
+										break;
+				            	   }
+				            	   game.getOpponentBoard().randomizePlanes();
+				            	   String gameId = GameManager.getManager().addGame(Constants.DEFAULT_ID_SINGLE_PLAYER, game);
+				            	   Intent intent = new Intent(PlanningBoardActivity.this, PlayingBoardActivity.class);
+				            	   intent.putExtra(PlayingBoardActivity.GAME_ID, gameId);
+				            	   startActivity(intent);
+				            	   finish();
+				           }
+				    });
+				    builder.create().show();
+					
 				}
 			}
 		});
