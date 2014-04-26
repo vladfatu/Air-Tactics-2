@@ -11,6 +11,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.airtactics.backend.UpdateGameInfo;
 import com.airtactics.constants.Constants;
 import com.airtactics.managers.GameManager;
 import com.airtactics.pojos.Game;
@@ -52,10 +53,11 @@ public class GameMenuActivity extends BaseGameActivity{
 		AdView adView = (AdView)this.findViewById(R.id.adView);
 	    AdRequest adRequest = new AdRequest.Builder()
 	    	.addTestDevice("1A96947585B930E5C32F8D7874E7F6A0")
+	    	.addTestDevice("A6D0DF7C8962D83CCC2275E9333E0A8E")
+	    	.addTestDevice("184695F6741124A281EF9F04133382A6")
 	    	.build();
 	    adView.loadAd(adRequest);
 
-		
 		this.buttonSinglePlayer = (Button) findViewById(R.id.buttonSinglePlayer);
 		this.buttonSinglePlayer.setOnClickListener(new OnClickListener() {
 			
