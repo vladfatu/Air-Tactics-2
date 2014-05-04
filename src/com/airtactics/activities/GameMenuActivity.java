@@ -11,7 +11,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.airtactics.backend.UpdateGameInfo;
 import com.airtactics.constants.Constants;
 import com.airtactics.managers.GameManager;
 import com.airtactics.pojos.Game;

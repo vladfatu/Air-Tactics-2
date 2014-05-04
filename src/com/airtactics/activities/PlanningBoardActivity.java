@@ -44,7 +44,6 @@ public class PlanningBoardActivity extends BaseGameActivity {
 
 	private static final String TAG = "PlanningBoardActivity";
 	
-	private Button rotateButton;
 	private Button randomizeButton;
 	private Button startButton;
 	private ImageView gridImageView;
@@ -74,21 +73,7 @@ public class PlanningBoardActivity extends BaseGameActivity {
 
 		gridLayout = (FrameLayout) findViewById(R.id.frameLayoutGrid);
 
-		rotateButton = (Button) findViewById(R.id.buttonRotate);
-		rotateButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v)
-			{
-				planeView1.rotateClockwise();
-//				if (selectedPlaneView != null)
-//				{
-//					selectedPlaneView.rotateClockwise();
-//				}
-			}
-		});
-
-		randomizeButton = (Button) findViewById(R.id.buttonRanomize);
+		randomizeButton = (Button) findViewById(R.id.buttonRandomize);
 		randomizeButton.setOnClickListener(new OnClickListener() {
 
 			@Override

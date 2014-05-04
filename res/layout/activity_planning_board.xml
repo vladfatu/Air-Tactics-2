@@ -4,6 +4,7 @@
     android:id="@+id/relativeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg"
     tools:context=".PlanningBoardActivity" >
     
     <com.google.android.gms.ads.AdView
@@ -55,33 +56,21 @@
     </FrameLayout>
 
     <Button
-        android:id="@+id/buttonRotate"
+        android:id="@+id/buttonRandomize"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/buttonContinue"
-        android:layout_alignRight="@+id/buttonContinue"
-        android:layout_marginBottom="20dp"
-        android:layout_marginRight="50dp"
-        android:text="@string/rotate" />
-
-    <Button
-        android:id="@+id/buttonRanomize"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/buttonRotate"
-        android:layout_alignBottom="@+id/buttonRotate"
-        android:layout_alignLeft="@+id/buttonContinue"
-        android:layout_marginLeft="50dp"
-        android:text="@string/randomize" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="22dp"
+        android:background="@drawable/button_reload" />
 
     <Button
         android:id="@+id/buttonContinue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/frameLayoutGrid"
         android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/frameLayoutGrid"
-        android:layout_marginBottom="20dp"
-        android:text="@string/start" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="22dp"
+        android:background="@drawable/button_play" />
 
 </RelativeLayout>

@@ -4,52 +4,74 @@
     android:id="@+id/relativeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg"
     tools:context=".GameMenuActivity" >
 
-    <Button
-        android:id="@+id/buttonSinglePlayer"
+    <LinearLayout
+        android:id="@+id/bigLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="124dp"
-        android:text="@string/single_player" />
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/buttonCheckMatches"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/buttonSinglePlayer"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="85dp"
-        android:text="@string/check_matches" />
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/content_description"
+            android:src="@drawable/air_tactics" />
+
+        <LinearLayout
+            android:id="@+id/smallLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/buttonSinglePlayer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/button_single_player" />
+
+            <Button
+                android:id="@+id/buttonInviteFriends"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/button_multi_player" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
         ads:adSize="SMART_BANNER"
         ads:adUnitId="ca-app-pub-4668622539935763/6585462734" >
     </com.google.android.gms.ads.AdView>
 
-    <Button
-        android:id="@+id/buttonInviteFriends"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/buttonOnline"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="15dp"
-        android:text="@string/invide_friends" />
+        android:layout_marginBottom="40dp" >
 
-    <Button
-        android:id="@+id/buttonOnline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/buttonCheckMatches"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
-        android:text="@string/online" />
+        <Button
+            android:id="@+id/buttonCheckMatches"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/check_matches" />
+
+        <Button
+            android:id="@+id/buttonOnline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/online" />
+    </LinearLayout>
 
 </RelativeLayout>
