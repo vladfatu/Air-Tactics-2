@@ -4,7 +4,7 @@
     android:id="@+id/relativeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg"
+    android:background="@drawable/map"
     tools:context=".PlanningBoardActivity" >
 
     <com.google.android.gms.ads.AdView
@@ -31,7 +31,6 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/content_description"
             android:src="@drawable/grid" />
-
     </FrameLayout>
 
     <FrameLayout
@@ -69,7 +68,6 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/content_description"
             android:src="@drawable/plane_small" />
-
     </FrameLayout>
 
     <LinearLayout
@@ -77,68 +75,105 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/frameLayoutGrid"
         android:layout_alignParentRight="true"
+        android:layout_alignTop="@id/frameLayoutGridSmall"
         android:layout_marginBottom="10dp"
+        android:gravity="center_vertical"
         android:orientation="vertical" >
 
-        <ImageView
-            android:id="@+id/imageView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/content_description"
-            android:src="@drawable/name_tag" />
+        <RelativeLayout
+            android:id="@+id/RelativeLayout1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
 
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/content_description"
-            android:src="@drawable/name_tag" />
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:contentDescription="@string/content_description"
+                android:src="@drawable/player_status" />
+
+            <TextView
+                android:id="@+id/textViewYourScore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="19dp"
+                android:paddingBottom="3dp"
+                android:text="@string/zero"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="35sp" />
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignRight="@id/imageView1"
+                android:text="@string/you"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/RelativeLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:contentDescription="@string/content_description"
+                android:src="@drawable/player_status" />
+
+            <TextView
+                android:id="@+id/textViewOppScore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="19dp"
+                android:paddingBottom="3dp"
+                android:text="@string/zero"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="35sp" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignRight="@id/imageView2"
+                android:layout_centerVertical="true"
+                android:text="@string/enemy"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </RelativeLayout>
     </LinearLayout>
 
     <ImageView
         android:id="@+id/imageViewHitHead"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="invisible"
         android:contentDescription="@string/content_description"
-        android:src="@drawable/hit_head" />
+        android:src="@drawable/hit_head"
+        android:visibility="invisible" />
 
     <ImageView
         android:id="@+id/imageViewNoHit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="invisible"
         android:contentDescription="@string/content_description"
-        android:src="@drawable/no_hit" />
+        android:src="@drawable/no_hit"
+        android:visibility="invisible" />
 
     <ImageView
         android:id="@+id/imageViewHitBody"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="invisible"
         android:contentDescription="@string/content_description"
-        android:src="@drawable/hit_body" />
-
-    <TextView
-        android:id="@+id/textViewYourScore"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/frameLayoutGrid"
-        android:layout_alignTop="@+id/frameLayoutGridSmall"
-        android:layout_marginRight="15dp"
-        android:layout_marginTop="26dp"
-        android:text="@string/zero"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <TextView
-        android:id="@+id/textViewOppScore"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/frameLayoutGridSmall"
-        android:layout_alignLeft="@+id/textViewYourScore"
-        android:layout_marginBottom="27dp"
-        android:text="@string/zero"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:src="@drawable/hit_body"
+        android:visibility="invisible" />
 
     <ImageView
         android:id="@+id/imageViewPlaneBoard"

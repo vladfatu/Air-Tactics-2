@@ -25,5 +25,9 @@
     <string name="you_won">You Won!</string>
     <string name="you_lost">You Lost!</string>
     <string name="choose_your_opponent">Choose Your Opponent</string>
+    <string name="achievements">achievements</string>
+    <string name="you">You</string>
+    <string name="opponent">Opponent</string>
+    <string name="enemy">Enemy</string>
 
 </resources>

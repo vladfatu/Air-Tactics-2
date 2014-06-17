@@ -41,9 +41,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
                 android:background="@drawable/button_multi_player" />
-
         </LinearLayout>
-
     </LinearLayout>
 
     <com.google.android.gms.ads.AdView
@@ -54,24 +52,22 @@
         ads:adUnitId="ca-app-pub-4668622539935763/6585462734" >
     </com.google.android.gms.ads.AdView>
 
-    <LinearLayout
+    <Button
+        android:id="@+id/buttonAchievements"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="40dp" >
+        android:text="@string/achievements"
+        android:visibility="gone" />
 
-        <Button
-            android:id="@+id/buttonCheckMatches"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/check_matches" />
-
-        <Button
-            android:id="@+id/buttonOnline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/online" />
-    </LinearLayout>
+    <Button
+        android:id="@+id/buttonCheckMatches"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/bigLayout"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/button_ongoing_games" />
 
 </RelativeLayout>

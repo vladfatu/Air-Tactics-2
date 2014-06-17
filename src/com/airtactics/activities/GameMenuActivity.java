@@ -76,7 +76,7 @@ public class GameMenuActivity extends BaseGameActivity{
 			}
 		});
 		
-		this.buttonOnline = (Button) findViewById(R.id.buttonOnline);
+		this.buttonOnline = (Button) findViewById(R.id.buttonAchievements);
 		this.buttonOnline.setOnClickListener(new OnClickListener() {
 			
 			@Override

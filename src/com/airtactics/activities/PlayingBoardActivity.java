@@ -190,13 +190,13 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 	
 	private void updateScore()
 	{
-		if (yourScoreTextView != null)
+		if (oppScoreTextView != null)
 		{
-			yourScoreTextView.setText(game.getYourBoard().getNumberOfHitHeads() + "");
+			oppScoreTextView.setText(game.getYourBoard().getNumberOfHitHeads() + "");
 		}
-		if (oppScoreTextView != null && game.getOpponentBoard() != null)
+		if (yourScoreTextView != null && game.getOpponentBoard() != null)
 		{
-			oppScoreTextView.setText(game.getOpponentBoard().getNumberOfHitHeads() + "");
+			yourScoreTextView.setText(game.getOpponentBoard().getNumberOfHitHeads() + "");
 		}
 		String winner = this.game.getWinner();
 		if (winner != null)
