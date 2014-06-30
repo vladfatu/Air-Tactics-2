@@ -98,8 +98,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="19dp"
-                android:paddingBottom="3dp"
+                android:layout_marginLeft="20dp"
+                android:paddingBottom="-14dp"
                 android:text="@string/zero"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textSize="35sp" />
@@ -109,6 +109,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
+                android:paddingTop="10dp"
                 android:layout_alignRight="@id/imageView1"
                 android:text="@string/you"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -126,15 +127,15 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:contentDescription="@string/content_description"
-                android:src="@drawable/player_status" />
+                android:src="@drawable/player_status_opponent" />
 
             <TextView
                 android:id="@+id/textViewOppScore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="19dp"
-                android:paddingBottom="3dp"
+                android:layout_marginLeft="20dp"
+                android:paddingBottom="-14dp"
                 android:text="@string/zero"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textSize="35sp" />
@@ -144,6 +145,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignRight="@id/imageView2"
+                android:paddingTop="10dp"
                 android:layout_centerVertical="true"
                 android:text="@string/enemy"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
