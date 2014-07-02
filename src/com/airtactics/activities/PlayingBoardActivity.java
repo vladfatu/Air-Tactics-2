@@ -49,7 +49,7 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 	private ImageView gridLargeImageView;
 	private FrameLayout gridSmallFrameLayout;
 	private FrameLayout gridFrameLayout;
-	private ImageView hitHeadImageView, hitBodyImageView, noHitImageView;
+	private ImageView hitHeadImageView, hitBodyImageView, noHitImageView, noHitImageViewSmall;
 	private TextView yourScoreTextView, oppScoreTextView;
 	private Tile selectedTile;
 	private String gameId;
@@ -89,6 +89,7 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 		hitHeadImageView = (ImageView) findViewById(R.id.imageViewHitHead);
 		hitBodyImageView = (ImageView) findViewById(R.id.imageViewHitBody);
 		noHitImageView = (ImageView) findViewById(R.id.imageViewNoHit);
+		noHitImageViewSmall = (ImageView) findViewById(R.id.imageViewNoHitSmall);
 		
 		yourScoreTextView = (TextView) findViewById(R.id.textViewYourScore);
 		oppScoreTextView = (TextView) findViewById(R.id.textViewOppScore);
@@ -105,8 +106,11 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 				hasLoaded = true;
 				setupGame();
 				Tile.HIT_HEAD_WIDTH = hitHeadImageView.getWidth();
+				Tile.HIT_HEAD_WIDTH_SMALL = hitHeadImageView.getWidth();
 				Tile.HIT_BODY_WIDTH = hitBodyImageView.getWidth();
+				Tile.HIT_BODY_WIDTH_SMALL = hitBodyImageView.getWidth();
 				Tile.NO_HIT_WIDTH = noHitImageView.getWidth();
+				Tile.NO_HIT_WIDTH_SMALL = noHitImageViewSmall.getWidth();
 				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
 				{
 					layout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
@@ -147,18 +151,18 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 			if (yourBoard != null)
 			{
 //				removeAllTiles(this.gridSmallFrameLayout);
-				for (Tile tile : this.game.getYourBoard().getAlreadyHitTiles(this))
+				for (Tile tile : this.game.getYourBoard().getAlreadyHitTiles(this, true))
 				{
-					addTile(this.gridSmallFrameLayout, tile);
+					addTile(this.gridSmallFrameLayout, tile, true);
 				}
 			}
 			Board opponentBoard = game.getOpponentBoard();
 			if (opponentBoard != null)
 			{
 //				removeAllTiles(this.gridFrameLayout);
-				for (Tile tile : this.game.getOpponentBoard().getAlreadyHitTiles(this))
+				for (Tile tile : this.game.getOpponentBoard().getAlreadyHitTiles(this, false))
 				{
-					addTile(this.gridFrameLayout, tile);
+					addTile(this.gridFrameLayout, tile, false);
 				}
 			}
 		}
@@ -210,7 +214,7 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 							1,
 							0,
 							1,
-							this.game.getOpponentBoard().getAlreadyHitTiles(this).size());
+							this.game.getOpponentBoard().getAlreadyHitTiles(this, false).size());
 				    task.execute();
 				}
 			}
@@ -271,9 +275,9 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 									}
 									TileType tileType = this.game.clickOpponentBoard(this, currentTilePosition, matchId,
 											apiClient);
-									Tile tile = new Tile(this, currentTilePosition, tileType);
+									Tile tile = new Tile(this, false, currentTilePosition, tileType);
 	
-									addTile(this.gridFrameLayout, tile);
+									addTile(this.gridFrameLayout, tile, false);
 									if (tile != null)
 									{
 										this.gridFrameLayout.removeView(this.selectedTile.getImageView());
@@ -281,27 +285,31 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 									}
 								} else
 								{
-									if (this.selectedTile == null)
+									System.out.println("Current Tile Position: " + currentTilePosition.x + ", " + currentTilePosition.y);
+									if (!this.game.getOpponentBoard().isPositionAlreayShot(currentTilePosition))
 									{
-										this.selectedTile = new Tile(currentTilePosition);
-										this.selectedTile.setSelected(true);
-										ImageView imageView = new ImageView(this);
-										imageView.setImageResource(this.selectedTile.getResourceId());
-										this.selectedTile.setImageView(imageView);
-	
-										Point viewPosition = this.selectedTile.getViewPosition(
-												this.gridLargeImageView.getWidth(), false);
-										lp.setMargins(viewPosition.x, viewPosition.y, 0, 0);
-	
-										this.gridFrameLayout.addView(this.selectedTile.getImageView(), lp);
-									} else
-									{
-										this.selectedTile.setPosition(currentTilePosition);
-										Point viewPosition = this.selectedTile.getViewPosition(
-												this.gridLargeImageView.getWidth(), false);
-										lp.setMargins(viewPosition.x, viewPosition.y, 0, 0);
-	
-										this.selectedTile.getImageView().setLayoutParams(lp);
+										if (this.selectedTile == null)
+										{
+											this.selectedTile = new Tile(currentTilePosition, false);
+											this.selectedTile.setSelected(true);
+											ImageView imageView = new ImageView(this);
+											imageView.setImageResource(this.selectedTile.getResourceId());
+											this.selectedTile.setImageView(imageView);
+
+											Point viewPosition = this.selectedTile.getViewPosition(
+													this.gridLargeImageView.getWidth(), false);
+											lp.setMargins(viewPosition.x, viewPosition.y, 0, 0);
+
+											this.gridFrameLayout.addView(this.selectedTile.getImageView(), lp);
+										} else
+										{
+											this.selectedTile.setPosition(currentTilePosition);
+											Point viewPosition = this.selectedTile.getViewPosition(
+													this.gridLargeImageView.getWidth(), false);
+											lp.setMargins(viewPosition.x, viewPosition.y, 0, 0);
+
+											this.selectedTile.getImageView().setLayoutParams(lp);
+										}
 									}
 								}
 							} else
@@ -337,13 +345,13 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 		gridLayout.removeAllViews();
 	}
 	
-	public void addTile(FrameLayout gridLayout, Tile tile)
+	public void addTile(FrameLayout gridLayout, Tile tile, boolean isSmall)
 	{
 		FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
 				FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
 		if (tile != null)
 		{
-			Point viewPosition = tile.getViewPosition(gridLayout.getWidth(), false);
+			Point viewPosition = tile.getViewPosition(gridLayout.getWidth(), isSmall);
 			lp.setMargins(viewPosition.x, viewPosition.y, 0, 0);
 
 			gridLayout.addView(tile.getImageView(), lp);
@@ -353,8 +361,8 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 	@Override
 	public void onOpponentShot(Point point)
 	{
-		Tile tile = new Tile(this, point, this.game.getYourBoard().checkPoint(point));
-		addTile(this.gridSmallFrameLayout, tile);
+		Tile tile = new Tile(this, true, point, this.game.getYourBoard().checkPoint(point));
+		addTile(this.gridSmallFrameLayout, tile, true);
 	}
 
 	@Override

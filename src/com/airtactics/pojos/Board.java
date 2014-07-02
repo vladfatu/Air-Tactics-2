@@ -151,7 +151,7 @@ public class Board implements Serializable{
 		return count;
 	}
 	
-	public List<Tile> getAlreadyHitTiles(Context context)
+	public List<Tile> getAlreadyHitTiles(Context context, boolean isPlaneSmall)
 	{
 		List<Tile> tiles = new ArrayList<Tile>();
 		for (int i =0;i<Constants.GRID_SIZE;i++)
@@ -161,7 +161,7 @@ public class Board implements Serializable{
 				if (this.boardMatrix[i][j] == 1)
 				{
 					Point position = new Point(i, j);
-					Tile tile = new Tile(context, position, checkPoint(position));
+					Tile tile = new Tile(context, isPlaneSmall, position, checkPoint(position));
 					tiles.add(tile);
 				}
 			}

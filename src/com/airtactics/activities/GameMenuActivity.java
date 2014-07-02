@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import airtactics.com.R;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -42,12 +43,16 @@ public class GameMenuActivity extends BaseGameActivity{
 	private Button buttonInviteFriends;
 	private Button buttonCheckMatches;
 	private boolean alreadyStartedMatch;
+	private ProgressDialog progress;
+	private boolean showingLoadingDialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game_menu);
+		
+		showingLoadingDialog = false;
 		
 		AdView adView = (AdView)this.findViewById(R.id.adView);
 	    AdRequest adRequest = new AdRequest.Builder()
@@ -114,6 +119,23 @@ public class GameMenuActivity extends BaseGameActivity{
 		});
 	}
 	
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
+	}
+	
+	@Override
+	protected void onPause()
+	{
+		if (showingLoadingDialog)
+		{
+			progress.dismiss();
+			showingLoadingDialog = false;
+		}
+		super.onPause();
+	}
+	
 	public void onActivityResult(int request, int response, Intent data) {
         super.onActivityResult(request, response, data);
 
@@ -164,6 +186,13 @@ public class GameMenuActivity extends BaseGameActivity{
                     .addInvitedPlayers(invitees)
                     .setAutoMatchCriteria(autoMatchCriteria).build();
 
+            if (!showingLoadingDialog)
+            {
+	            progress = ProgressDialog.show(this, "Loading",
+	            	    "Initializing your game...", true);
+	            showingLoadingDialog = true;
+            }
+            
             // Start the match
             Games.TurnBasedMultiplayer.createMatch(getApiClient(), tbmc).setResultCallback(
                     new ResultCallback<TurnBasedMultiplayer.InitiateMatchResult>() {
@@ -172,6 +201,8 @@ public class GameMenuActivity extends BaseGameActivity{
                     //processResult(result);
                 	TurnBasedMatch match = result.getMatch();
                 	handleMatch(match);
+                	progress.dismiss();
+                	showingLoadingDialog = false;
                 }
             });
             //showSpinner();
@@ -223,14 +254,14 @@ public class GameMenuActivity extends BaseGameActivity{
 	@Override
 	public void onSignInFailed()
 	{
-		Toast.makeText(this, "Signed in failed", Toast.LENGTH_SHORT).show();
+//		Toast.makeText(this, "Signed in failed", Toast.LENGTH_SHORT).show();
 		
 	}
 
 	@Override
 	public void onSignInSucceeded()
 	{
-		Toast.makeText(this, "Signed in", Toast.LENGTH_SHORT).show();
+//		Toast.makeText(this, "Signed in", Toast.LENGTH_SHORT).show();
 		GameManager.getManager().registerAsListener(getApiClient());
 		if (!alreadyStartedMatch)
 		{

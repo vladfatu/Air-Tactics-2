@@ -168,6 +168,14 @@
         android:contentDescription="@string/content_description"
         android:src="@drawable/no_hit"
         android:visibility="invisible" />
+    
+    <ImageView
+        android:id="@+id/imageViewNoHitSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/content_description"
+        android:src="@drawable/no_hit_small"
+        android:visibility="invisible" />
 
     <ImageView
         android:id="@+id/imageViewHitBody"

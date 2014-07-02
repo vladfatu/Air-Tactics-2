@@ -30,14 +30,18 @@ public class Tile {
 
 	private Point position;
 	
-	public Tile(Point position) {
+	private boolean isPlaneSmall;
+	
+	public Tile(Point position, boolean isPlaneSmall) {
+		this.isPlaneSmall = isPlaneSmall;
 		this.position = position;
 		this.setType(TileType.NONE);
 		this.selected = false;
 	}
 	
-	public Tile(Context context, Point position, TileType type)
+	public Tile(Context context, boolean isPlaneSmall, Point position, TileType type)
 	{
+		this.isPlaneSmall = isPlaneSmall;
 		this.position = position;
 		this.setType(type);
 		this.selected = false;
@@ -100,15 +104,36 @@ public class Tile {
 			{
 				case HIT_HEAD:
 				{
-					return R.drawable.hit_head;
+					if (this.isPlaneSmall)
+					{
+						return R.drawable.hit_head_small;
+					}
+					else
+					{
+						return R.drawable.hit_head;
+					}
 				}
 				case HIT_BODY:
 				{
-					return R.drawable.hit_body;
+					if (this.isPlaneSmall)
+					{
+						return R.drawable.hit_body_small;
+					}
+					else
+					{
+						return R.drawable.hit_body;
+					}
 				}
 				case MISSED:
 				{
-					return R.drawable.no_hit;
+					if (this.isPlaneSmall)
+					{
+						return R.drawable.no_hit_small;
+					}
+					else
+					{
+						return R.drawable.no_hit;
+					}
 				}
 				case NONE:
 				{
@@ -186,7 +211,18 @@ public class Tile {
 		int unit = gridSize/10;
 		
 		int x = left / unit;
+		//for the case where left == griSize
+		if (x > 9)
+		{
+			x = 9;
+		}
+		
 		int y = top / unit;
+		//for the case where top == griSize
+		if (y > 9)
+		{
+			y = 9;
+		}
 		
 		return new Point(x, y);
 		
