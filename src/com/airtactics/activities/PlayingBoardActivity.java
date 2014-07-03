@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -259,6 +260,8 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 							{
 								FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
 										FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+								
+								lp.gravity = Gravity.NO_GRAVITY;
 	
 								Point currentTilePosition = Tile.getPosition(currentX, currentY,
 										this.gridLargeImageView.getWidth());
@@ -349,6 +352,9 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 	{
 		FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
 				FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+		
+		lp.gravity = Gravity.NO_GRAVITY;
+		
 		if (tile != null)
 		{
 			Point viewPosition = tile.getViewPosition(gridLayout.getWidth(), isSmall);

@@ -1,6 +1,7 @@
 package com.airtactics.views;
 
 import android.content.Context;
+import android.view.Gravity;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageView;
 
@@ -47,6 +48,9 @@ public class PlaneView{
 	{
 		this.plane.rotateClockwise();
 		LayoutParams params = (LayoutParams) imageView.getLayoutParams();
+		
+		params.gravity = Gravity.NO_GRAVITY;
+		
 		moveToCoordinates(params.leftMargin, params.topMargin , imageView.getHeight(), imageView.getWidth(), true);
 		updateImageView();
 	}
@@ -104,6 +108,8 @@ public class PlaneView{
 		int top = y;
 		LayoutParams params = (LayoutParams) imageView.getLayoutParams();
 		
+		params.gravity = Gravity.NO_GRAVITY;
+		
 		left -= (left % unit);
 		top -= (top % unit);
 		
@@ -160,6 +166,7 @@ public class PlaneView{
 		rotateImageView();
 		int unit = gridSize/10;
 		LayoutParams params = (LayoutParams) this.imageView.getLayoutParams();
+		params.gravity = Gravity.NO_GRAVITY;
 		int previousLeftMargin = params.leftMargin;
 		int previousTopMargin = params.topMargin;
 		
