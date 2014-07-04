@@ -63,9 +63,9 @@ public class PlanningBoardActivity extends BaseGameActivity {
 
 		AdView adView = (AdView) this.findViewById(R.id.adView);
 		AdRequest adRequest = new AdRequest.Builder()
-		.addTestDevice("1A96947585B930E5C32F8D7874E7F6A0")
-		.addTestDevice("A6D0DF7C8962D83CCC2275E9333E0A8E")
-		.addTestDevice("184695F6741124A281EF9F04133382A6")
+//		.addTestDevice("1A96947585B930E5C32F8D7874E7F6A0")
+//		.addTestDevice("A6D0DF7C8962D83CCC2275E9333E0A8E")
+//		.addTestDevice("184695F6741124A281EF9F04133382A6")
 		.build();
 		adView.loadAd(adRequest);
 
@@ -98,7 +98,7 @@ public class PlanningBoardActivity extends BaseGameActivity {
 				{
 					String[] opponents = new String[3];
 					opponents[0] = "Smart Ai";
-					opponents[1] = "Smart Random Ai";
+					opponents[1] = "Normal Ai";
 					opponents[2] = "Simple Ai";
 					AlertDialog.Builder builder = new AlertDialog.Builder(PlanningBoardActivity.this);
 				    builder.setTitle(R.string.choose_your_opponent)

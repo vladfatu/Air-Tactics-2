@@ -21,6 +21,7 @@ public class Tile {
 	
 	public static int HIT_HEAD_WIDTH, HIT_BODY_WIDTH, NO_HIT_WIDTH;
 	public static int HIT_HEAD_WIDTH_SMALL, HIT_BODY_WIDTH_SMALL, NO_HIT_WIDTH_SMALL;
+	public static int EXPLOSION_WIDTH_SIZE, EXPLOSION_HEIGHT_SIZE, FIRE_WIDTH_SIZE, FIRE_HEIGHT_SIZE;
 	
 	private ImageView imageView;
 

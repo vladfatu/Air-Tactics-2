@@ -2,11 +2,13 @@ package com.airtactics.activities;
 
 import airtactics.com.R;
 import android.annotation.SuppressLint;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.FrameLayout;
@@ -50,12 +52,14 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 	private ImageView gridLargeImageView;
 	private FrameLayout gridSmallFrameLayout;
 	private FrameLayout gridFrameLayout;
-	private ImageView hitHeadImageView, hitBodyImageView, noHitImageView, noHitImageViewSmall;
+	private ImageView hitHeadImageView, hitBodyImageView, noHitImageView, noHitImageViewSmall, explosionExample, fireExample;
 	private TextView yourScoreTextView, oppScoreTextView;
 	private Tile selectedTile;
 	private String gameId;
 	private boolean hasLoaded;
 	private boolean wasAlreadyFinished;
+	private ImageView explosionImage;
+	private AnimationDrawable frameAnimation;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -76,9 +80,9 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 
 		AdView adView = (AdView) this.findViewById(R.id.adView);
 		AdRequest adRequest = new AdRequest.Builder()
-		.addTestDevice("1A96947585B930E5C32F8D7874E7F6A0")
-		.addTestDevice("A6D0DF7C8962D83CCC2275E9333E0A8E")
-		.addTestDevice("184695F6741124A281EF9F04133382A6")
+//		.addTestDevice("1A96947585B930E5C32F8D7874E7F6A0")
+//		.addTestDevice("A6D0DF7C8962D83CCC2275E9333E0A8E")
+//		.addTestDevice("184695F6741124A281EF9F04133382A6")
 		.build();
 		adView.loadAd(adRequest);
 
@@ -91,9 +95,13 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 		hitBodyImageView = (ImageView) findViewById(R.id.imageViewHitBody);
 		noHitImageView = (ImageView) findViewById(R.id.imageViewNoHit);
 		noHitImageViewSmall = (ImageView) findViewById(R.id.imageViewNoHitSmall);
+		explosionExample = (ImageView) findViewById(R.id.imageViewExplosionExample);
+		fireExample = (ImageView) findViewById(R.id.imageViewFireExample);
 		
 		yourScoreTextView = (TextView) findViewById(R.id.textViewYourScore);
 		oppScoreTextView = (TextView) findViewById(R.id.textViewOppScore);
+		
+		explosionImage = (ImageView) findViewById(R.id.explosionAnimation);
 
 		this.hasLoaded = false;
 		final RelativeLayout layout = (RelativeLayout) findViewById(R.id.relativeLayout);
@@ -112,6 +120,10 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 				Tile.HIT_BODY_WIDTH_SMALL = hitBodyImageView.getWidth();
 				Tile.NO_HIT_WIDTH = noHitImageView.getWidth();
 				Tile.NO_HIT_WIDTH_SMALL = noHitImageViewSmall.getWidth();
+				Tile.EXPLOSION_WIDTH_SIZE = explosionExample.getWidth();
+				Tile.EXPLOSION_HEIGHT_SIZE = explosionExample.getHeight();
+				Tile.FIRE_WIDTH_SIZE = fireExample.getWidth();
+				Tile.FIRE_HEIGHT_SIZE = fireExample.getHeight();
 				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
 				{
 					layout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
@@ -154,7 +166,7 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 //				removeAllTiles(this.gridSmallFrameLayout);
 				for (Tile tile : this.game.getYourBoard().getAlreadyHitTiles(this, true))
 				{
-					addTile(this.gridSmallFrameLayout, tile, true);
+					addTile(this.gridSmallFrameLayout, tile, true, false);
 				}
 			}
 			Board opponentBoard = game.getOpponentBoard();
@@ -163,7 +175,7 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 //				removeAllTiles(this.gridFrameLayout);
 				for (Tile tile : this.game.getOpponentBoard().getAlreadyHitTiles(this, false))
 				{
-					addTile(this.gridFrameLayout, tile, false);
+					addTile(this.gridFrameLayout, tile, false, false);
 				}
 			}
 		}
@@ -279,8 +291,18 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 									TileType tileType = this.game.clickOpponentBoard(this, currentTilePosition, matchId,
 											apiClient);
 									Tile tile = new Tile(this, false, currentTilePosition, tileType);
-	
-									addTile(this.gridFrameLayout, tile, false);
+									
+									addTile(this.gridFrameLayout, tile, false, true);
+									
+									if (tileType == TileType.MISSED)
+									{
+										playExplosion(false);
+									}
+									else
+									{
+										playExplosion(true);
+									}
+									
 									if (tile != null)
 									{
 										this.gridFrameLayout.removeView(this.selectedTile.getImageView());
@@ -335,6 +357,29 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 		}
 		return false;
 	}
+	
+	private void playExplosion(boolean hit)
+	{
+		if (frameAnimation != null)
+		{
+			frameAnimation.stop();
+		}
+		
+		if (hit)
+		{
+			explosionImage.setBackgroundResource(R.drawable.hit_animation);
+		}
+		else
+		{
+			explosionImage.setBackgroundResource(R.drawable.no_hit_animation);
+		}
+
+		 // Get the background, which has been compiled to an AnimationDrawable object.
+		 frameAnimation = (AnimationDrawable) explosionImage.getBackground();
+
+		 // Start the animation (looped playback by default).
+		 frameAnimation.start();
+	}
 
 	@Override
 	protected void onDestroy()
@@ -348,7 +393,7 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 		gridLayout.removeAllViews();
 	}
 	
-	public void addTile(FrameLayout gridLayout, Tile tile, boolean isSmall)
+	public void addTile(FrameLayout gridLayout, Tile tile, boolean isSmall, boolean moveAnimation)
 	{
 		FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
 				FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
@@ -361,6 +406,42 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 			lp.setMargins(viewPosition.x, viewPosition.y, 0, 0);
 
 			gridLayout.addView(tile.getImageView(), lp);
+
+			if (moveAnimation)
+			{
+				int deltaTop, deltaLeft;
+				switch (tile.getType())
+				{
+					case HIT_BODY:
+					{
+						deltaTop = Tile.FIRE_HEIGHT_SIZE/2 - Tile.HIT_BODY_WIDTH/2;
+						deltaLeft = Tile.FIRE_WIDTH_SIZE/2 - Tile.HIT_BODY_WIDTH/2;
+						break;
+					}
+					
+					case HIT_HEAD:
+					{
+						deltaTop = Tile.FIRE_HEIGHT_SIZE/2 - Tile.HIT_HEAD_WIDTH/2;
+						deltaLeft = Tile.FIRE_WIDTH_SIZE/2 - Tile.HIT_HEAD_WIDTH/2;
+						break;
+					}
+					
+					case MISSED:default:
+					{
+						deltaTop = Tile.EXPLOSION_HEIGHT_SIZE/2 - Tile.NO_HIT_WIDTH/2;
+						deltaLeft = Tile.EXPLOSION_WIDTH_SIZE/2 - Tile.NO_HIT_WIDTH/2;
+						break;
+					}
+					
+				}
+				
+				RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(
+						ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+				rlp.setMargins(viewPosition.x + gridFrameLayout.getLeft() - deltaLeft
+						, viewPosition.y + gridFrameLayout.getTop() - deltaTop, 0, 0);
+				
+				explosionImage.setLayoutParams(rlp);
+			}
 		}
 	}
 	
@@ -368,7 +449,7 @@ public class PlayingBoardActivity extends BaseGameActivity implements GameListen
 	public void onOpponentShot(Point point)
 	{
 		Tile tile = new Tile(this, true, point, this.game.getYourBoard().checkPoint(point));
-		addTile(this.gridSmallFrameLayout, tile, true);
+		addTile(this.gridSmallFrameLayout, tile, true, false);
 	}
 
 	@Override

@@ -1,7 +1,5 @@
 package com.airtactics.activities;
 
-import com.google.android.gms.games.GamesClient;
-
 import airtactics.com.R;
 import android.app.Activity;
 import android.content.Intent;
@@ -9,6 +7,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.widget.Toast;
+
+import com.google.android.gms.games.GamesClient;
 
 /**
  * @author Vlad
@@ -54,6 +54,7 @@ public class SplashScreenActivity extends Activity {
 				return null;
 			}
 		}.execute("");
+		
 	}
 
 	@Override
