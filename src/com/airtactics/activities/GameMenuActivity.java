@@ -200,7 +200,10 @@ public class GameMenuActivity extends BaseGameActivity{
                 public void onResult(TurnBasedMultiplayer.InitiateMatchResult result) {
                     //processResult(result);
                 	TurnBasedMatch match = result.getMatch();
-                	handleMatch(match);
+                	if (match != null)
+                	{
+                		handleMatch(match);
+                	}
                 	progress.dismiss();
                 	showingLoadingDialog = false;
                 }
